@@ -195,8 +195,6 @@ namespace OpenVice.Graphics {
 				if (tr.IsVisible()) tr.Render(true);
 			}
 
-			
-
 			GL.Disable(EnableCap.Blend);
 			GL.Disable(EnableCap.AlphaTest);
 		}

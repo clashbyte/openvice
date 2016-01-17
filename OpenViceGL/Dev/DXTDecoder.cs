@@ -14,9 +14,9 @@ namespace OpenVice.Dev {
 		/// </summary>
 		public enum CompressionType : int
 		{
-			DXT1 = 1 << 0,
-			DXT3 = 1 << 1,
-			DXT5 = 1 << 2
+			DXT1,
+			DXT3,
+			DXT5
 		}
 
 		/// <summary>

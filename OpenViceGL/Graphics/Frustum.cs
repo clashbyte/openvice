@@ -25,7 +25,6 @@ namespace OpenVice.Graphics {
 		/// TODO: Переделать под Matrix4
 		/// </summary>
 		public static void Update(Matrix4 projMatrix, Matrix4 modelMatrix) {
-			
 			// Defining clipping matrix<para/>
 			// Задаём матрицу отсечения
 			float t = 0f;
@@ -37,7 +36,6 @@ namespace OpenVice.Graphics {
 			frustum[0, 1] = clipMatrix.Row1.W - clipMatrix.Row1.X;
 			frustum[0, 2] = clipMatrix.Row2.W - clipMatrix.Row2.X;
 			frustum[0, 3] = clipMatrix.Row3.W - clipMatrix.Row3.X;
-
 			t = (float)Math.Sqrt(frustum[0, 0] * frustum[0, 0] + frustum[0, 1] * frustum[0, 1] + frustum[0, 2] * frustum[0, 2]);
 			frustum[0, 0] /= t;
 			frustum[0, 1] /= t;
@@ -50,7 +48,6 @@ namespace OpenVice.Graphics {
 			frustum[1, 1] = clipMatrix.Row1.W + clipMatrix.Row1.X;
 			frustum[1, 2] = clipMatrix.Row2.W + clipMatrix.Row2.X;
 			frustum[1, 3] = clipMatrix.Row3.W + clipMatrix.Row3.X;
-
 			t = (float)Math.Sqrt(frustum[1, 0] * frustum[1, 0] + frustum[1, 1] * frustum[1, 1] + frustum[1, 2] * frustum[1, 2]);
 			frustum[1, 0] /= t;
 			frustum[1, 1] /= t;
@@ -63,8 +60,6 @@ namespace OpenVice.Graphics {
 			frustum[2, 1] = clipMatrix.Row1.W + clipMatrix.Row1.Y;
 			frustum[2, 2] = clipMatrix.Row2.W + clipMatrix.Row2.Y;
 			frustum[2, 3] = clipMatrix.Row3.W + clipMatrix.Row3.Y;
-
-			// Normalize the result
 			t = (float)Math.Sqrt(frustum[2, 0] * frustum[2, 0] + frustum[2, 1] * frustum[2, 1] + frustum[2, 2] * frustum[2, 2]);
 			frustum[2, 0] /= t;
 			frustum[2, 1] /= t;
@@ -77,30 +72,18 @@ namespace OpenVice.Graphics {
 			frustum[3, 1] = clipMatrix.Row1.W - clipMatrix.Row1.Y;
 			frustum[3, 2] = clipMatrix.Row2.W - clipMatrix.Row2.Y;
 			frustum[3, 3] = clipMatrix.Row3.W - clipMatrix.Row3.Y;
-
-			// Normalize the result
 			t = (float)Math.Sqrt(frustum[3, 0] * frustum[3, 0] + frustum[3, 1] * frustum[3, 1] + frustum[3, 2] * frustum[3, 2]);
 			frustum[3, 0] /= t;
 			frustum[3, 1] /= t;
 			frustum[3, 2] /= t;
 			frustum[3, 3] /= t;
 
-
-			//      0   1   2  3
-
-			// #X - 0   4   8  12 
-			// #Y - 1   5   9  13
-			// #Z - 2   6  10  14
-			// #W - 3   7  11  15
-
-
 			// Extract the FAR plane
+			// Вычисление дальней поверхности
 			frustum[4, 0] = clipMatrix.Row0.W - clipMatrix.Row0.Z;
 			frustum[4, 1] = clipMatrix.Row1.W - clipMatrix.Row1.Z;
 			frustum[4, 2] = clipMatrix.Row2.W - clipMatrix.Row2.Z;
 			frustum[4, 3] = clipMatrix.Row3.W - clipMatrix.Row3.Z;
-
-			// Normalize the result
 			t = (float)Math.Sqrt(frustum[4, 0] * frustum[4, 0] + frustum[4, 1] * frustum[4, 1] + frustum[4, 2] * frustum[4, 2]);
 			frustum[4, 0] /= t;
 			frustum[4, 1] /= t;
@@ -108,12 +91,11 @@ namespace OpenVice.Graphics {
 			frustum[4, 3] /= t;
 
 			// Extract the NEAR plane
+			// Вычисление ближней поверхности
 			frustum[5, 0] = clipMatrix.Row0.W + clipMatrix.Row0.Z;
 			frustum[5, 1] = clipMatrix.Row1.W + clipMatrix.Row1.Z;
 			frustum[5, 2] = clipMatrix.Row2.W + clipMatrix.Row2.Z;
 			frustum[5, 3] = clipMatrix.Row3.W + clipMatrix.Row3.Z;
-
-			// Normalize the result 
 			t = (float)Math.Sqrt(frustum[5, 0] * frustum[5, 0] + frustum[5, 1] * frustum[5, 1] + frustum[5, 2] * frustum[5, 2]);
 			frustum[5, 0] /= t;
 			frustum[5, 1] /= t;
