@@ -57,31 +57,112 @@ namespace OpenVice.Entities {
 
 			bool needMesh = false;
 			bool needLod = false;
-
+			float appearDelta = 0.04f;
+			
+			// Check for fading
+			// Проверка на прозрачность
 			switch (State) {
 				case VisState.Hidden:
+					if (MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeEnabled] || !MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeDisabled]) {
+						if (LODMesh!=null) {
+							MainMesh.Opacity = 0;
+							if (LODMesh.Opacity>0f) {
+								needLod = true;
+								LODMesh.Opacity -= appearDelta * delta;
+								if (LODMesh.Opacity<=0) {
+									LODMesh.Opacity = 0;
+									needLod = false;
+								}
+							}
+						}else{
+							if (MainMesh.Opacity > 0f) {
+								needMesh = true;
+								MainMesh.Opacity -= appearDelta * delta;
+								if (MainMesh.Opacity <= 0) {
+									MainMesh.Opacity = 0;
+									needMesh = false;
+								}
+							}
+						}
+					}
 					break;
 				case VisState.LodVisible:
-					if (MainMesh.Ready && !LODMesh.Ready) {
-						needMesh = true;
-					}
 					needLod = true;
+					if (MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeEnabled] || !MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeDisabled]) {
+						if (LODMesh.Ready) {
+							if (LODMesh.Opacity < 1f) {
+								if (MainMesh.Opacity > 0f) {
+									needMesh = true;
+									MainMesh.Opacity -= appearDelta * delta;
+									if (MainMesh.Opacity <= 0) {
+										MainMesh.Opacity = 0;
+										needMesh = false;
+									}
+								}
+								LODMesh.Opacity += appearDelta * delta;
+								if (LODMesh.Opacity >= 1f) {
+									LODMesh.Opacity = 1f;
+									MainMesh.Opacity = 0;
+									needMesh = false;
+								}
+							}
+						} else {
+							if (MainMesh.Ready) {
+								needMesh = true;
+								if (MainMesh.Opacity<1f) {
+									MainMesh.Opacity += appearDelta * delta;
+									if (MainMesh.Opacity >= 1f) {
+										MainMesh.Opacity = 1f;
+									}
+								}
+							}
+						}
+					}else{
+						LODMesh.Opacity = 1f;
+					}
 					break;
 				case VisState.MeshVisible:
-					if (LODMesh!=null && !MainMesh.Ready) {
-						needLod = true;
-					}
 					needMesh = true;
+					if (MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeEnabled] || !MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeDisabled]) {
+						if (MainMesh.Ready) {
+							if (MainMesh.Opacity < 1f) {
+								if (LODMesh != null) {
+									if (LODMesh.Opacity < 1f) {
+										LODMesh.Opacity += appearDelta * delta;
+										if (LODMesh.Opacity > 1f) {
+											LODMesh.Opacity = 1f;
+										}
+									}
+									needLod = true;
+								}
+								MainMesh.Opacity += appearDelta * delta;
+								if (MainMesh.Opacity >= 1f) {
+									MainMesh.Opacity = 1f;
+									if (LODMesh != null) {
+										LODMesh.Opacity = 0;
+									}
+									needLod = false;
+								}
+							}
+						} else {
+							if (LODMesh!=null) {
+								if (LODMesh.Ready) {
+									needLod = true;
+									if (LODMesh.Opacity < 1f) {
+										LODMesh.Opacity += appearDelta * delta;
+										if (LODMesh.Opacity > 1f) {
+											LODMesh.Opacity = 1f;
+										}
+									}
+								}
+							}
+						}
+					} else {
+						MainMesh.Opacity = 1f;
+					}
 					break;
 			}
 
-
-			// Mesh is needed
-			MainMesh.Process(needMesh);
-			if (needMesh && MainMesh.IsTimedVisible()) {
-				MainMesh.Render();
-			}
-			
 
 			// Lod is needed
 			if (LODMesh != null) {
@@ -91,13 +172,13 @@ namespace OpenVice.Entities {
 				}
 			}
 
-		}
+			// Mesh is needed
+			MainMesh.Process(needMesh);
+			if (needMesh && MainMesh.IsTimedVisible()) {
+				MainMesh.Render();
+			}
+			
 
-		/// <summary>
-		/// Clean mesh unused data<para/>
-		/// Очистка неиспользуемых данных
-		/// </summary>
-		public void Cleanup() {
 
 		}
 
@@ -108,10 +189,16 @@ namespace OpenVice.Entities {
 		public class Group {
 
 			/// <summary>
+			/// ItemDefinition link for this group<para/>
+			/// Ссылка на ItemDefinition
+			/// </summary>
+			public ItemDefinition Definition;
+
+			/// <summary>
 			/// ItemPlacement link for this group<para/>
 			/// Ссылка на ItemPlacement
 			/// </summary>
-			public ItemPlacement Definition;
+			public ItemPlacement Placement;
 
 			/// <summary>
 			/// Group position in scene<para/>
@@ -153,7 +240,7 @@ namespace OpenVice.Entities {
 			/// Mesh opacity<para/>
 			/// Непрозрачность меша
 			/// </summary>
-			public float Opacity = 1f;
+			public float Opacity = 0f;
 
 			/// <summary>
 			/// TextureDictionary for this group<para/>
@@ -294,7 +381,7 @@ namespace OpenVice.Entities {
 							} else {
 								r.Fading = true;
 							}
-							r.FadingDelta = 1f;
+							r.FadingDelta = Opacity;
 							Renderer.RenderQueue.Enqueue(r);
 						}
 					}

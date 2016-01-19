@@ -105,6 +105,7 @@ namespace OpenVice.Files {
 			h.Size = f.ReadUInt32();
 			h.Toolkit = f.ReadUInt16();
 			h.Version = f.ReadUInt16();
+			System.Threading.Thread.Sleep(0);
 			return h;
 		}
 

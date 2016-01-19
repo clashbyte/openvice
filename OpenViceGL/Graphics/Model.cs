@@ -98,6 +98,9 @@ namespace OpenVice.Graphics {
 		/// Отправка данных на GPU
 		/// </summary>
 		public void SendSubMeshes() {
+			if (State != ReadyState.NotSent) {
+				return;
+			}
 			foreach (Branch b in Children) {
 				RecursiveProcessBranch(b, true);
 			}
@@ -446,13 +449,13 @@ namespace OpenVice.Graphics {
 			/// </summary>
 			/// <param name="td">Textures to use<para/>Текстуры для использования</param>
 			/// <param name="trans">Transparent mode<para/>Полупрозрачный режим</param>
-			public void Render(RendererBase renderer, TextureDictionary td, bool trans) {
+			public void Render(RendererBase renderer, TextureDictionary td, bool trans, bool force = false) {
 				if (State != ReadyState.Obsolette) {
 					if (State == ReadyState.Empty) {
 						Build();
 						State = ReadyState.NotSent;
 					} else if (State == ReadyState.Complete) {
-						DrawGL(renderer, td, trans);
+						DrawGL(renderer, td, trans, force);
 					}
 				}
 				ParentModel.UseCount++;
@@ -640,7 +643,7 @@ namespace OpenVice.Graphics {
 			/// Drawing GL data<para/>
 			/// Отрисовка GL-данных
 			/// </summary>
-			void DrawGL(RendererBase renderer, TextureDictionary td, bool trans) {
+			void DrawGL(RendererBase renderer, TextureDictionary td, bool trans, bool force) {
 				
 				// Sending vertex data
 				// Отправка вершинных данных
@@ -670,7 +673,7 @@ namespace OpenVice.Graphics {
 				// Drawing surfaces
 				// Отрисовка поверхностей
 				foreach (Surface s in Surfaces) {
-					if (s.IndexBuffer != 0 && s.Material.HasAlpha == trans) {
+					if (s.IndexBuffer != 0 && (s.Material.HasAlpha == trans || force)) {
 						// Binding material
 						// Присвоение материала
 						BindMaterial(renderer, s, td);
@@ -836,7 +839,7 @@ namespace OpenVice.Graphics {
 						GL.BindTexture(TextureTarget.Texture2D, Renderer.EmptyTexture);
 					}
 				}else{
-					GL.BindTexture(TextureTarget.Texture2D, 0);
+					GL.BindTexture(TextureTarget.Texture2D, Renderer.EmptyTexture);
 				}
 				renderer.SetupSurface(surf, mat, geometry);
 			}

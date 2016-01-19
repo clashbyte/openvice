@@ -54,7 +54,8 @@ namespace OpenVice.Managers {
 					// Заполнение обычных полей
 					StaticProxy sp = new StaticProxy();
 					sp.MainMesh = new StaticProxy.Group() {
-						Definition = p,
+						Placement = p,
+						Definition = ide,
 						Range = ide.DrawDistance[0],
 						Coords = new Graphics.Transform() {
 							Position = p.Position,
@@ -105,7 +106,8 @@ namespace OpenVice.Managers {
 						// Родитель не нашёлся - это простой объект
 						sp = new StaticProxy();
 						sp.MainMesh = new StaticProxy.Group() {
-							Definition = p,
+							Definition = ide,
+							Placement = p,
 							Range = ide.DrawDistance[0],
 							Coords = new Graphics.Transform() {
 								Position = p.Position,
@@ -123,7 +125,8 @@ namespace OpenVice.Managers {
 						// Creating lod fields
 						// Заполнение низкополигональных полей
 						sp.LODMesh = new StaticProxy.Group() {
-							Definition = p,
+							Definition = ide,
+							Placement = p,
 							Range = ide.DrawDistance[0],
 							Coords = new Graphics.Transform() {
 								Position = p.Position,
@@ -160,15 +163,6 @@ namespace OpenVice.Managers {
 		}
 
 		/// <summary>
-		/// Clean objects data
-		/// </summary>
-		public static void Cleanup() {
-			foreach (StaticProxy p in Statics) {
-				p.Cleanup();
-			}
-		}
-
-		/// <summary>
 		/// Background culling process<para/>
 		/// Фоновый процесс отсечения
 		/// </summary>
@@ -184,21 +178,21 @@ namespace OpenVice.Managers {
 					} else {
 						// Check for active interior
 						// Проверка на текущий интерьер
-						if (p.MainMesh.Definition.InteriorID == CityManager.Interior || p.MainMesh.Definition.InteriorID == ItemPlacement.Interior.Everywhere) {
+						if (p.MainMesh.Placement.InteriorID == CityManager.Interior || p.MainMesh.Placement.InteriorID == ItemPlacement.Interior.Everywhere) {
 							// Check for mesh visibility
 							// Проверка на видимость меша
 							Vector2 cam = new Vector2(Camera.Position.X, Camera.Position.Z);
 							Vector2 range = new Vector2(p.MainMesh.Coords.Position.X, p.MainMesh.Coords.Position.Z);
 							p.State = StaticProxy.VisState.Hidden;
 
-							if ((range - cam).LengthSquared <= p.MainMesh.Range * p.MainMesh.Range) {
+							if (p.MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.DisableDrawDistance] || (range - cam).LengthSquared <= p.MainMesh.Range * p.MainMesh.Range) {
 								// Main mesh is visible
 								// Основной меш виден
 								p.State = StaticProxy.VisState.MeshVisible;
 							} else {
 								if (p.LODMesh != null) {
 									range = new Vector2(p.LODMesh.Coords.Position.X, p.LODMesh.Coords.Position.Z);
-									if ((range - cam).LengthSquared <= p.LODMesh.Range * p.LODMesh.Range) {
+									if (p.LODMesh.Definition.Flags[ItemDefinition.DefinitionFlags.DisableDrawDistance] || (range - cam).LengthSquared <= p.LODMesh.Range * p.LODMesh.Range) {
 										// LOD is visible
 										// LOD-меш виден
 										p.State = StaticProxy.VisState.LodVisible;

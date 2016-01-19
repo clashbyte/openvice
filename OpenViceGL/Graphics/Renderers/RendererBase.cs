@@ -13,18 +13,7 @@ namespace OpenVice.Graphics.Renderers {
 	/// Одно событие рендера сурфейса для кадра
 	/// </summary>
 	public abstract class RendererBase {
-		/// <summary>
-		/// Force alphablended fading<para/>
-		/// Принудительное альфа-смешивание
-		/// </summary>
-		public bool Fading { get; set; }
-
-		/// <summary>
-		/// Fading opacity value<para/>
-		/// Значение непрозрачности для фейдинга
-		/// </summary>
-		public float FadingDelta { get; set; }
-
+		
 		/// <summary>
 		/// Base parent matrix<para/>
 		/// Основная матрица родителя

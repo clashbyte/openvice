@@ -44,9 +44,10 @@ namespace OpenVice.Graphics.Shaders {
 			TintColor = GL.GetUniformLocation(glprog, "tintColor");
 			AmbientColor = GL.GetUniformLocation(glprog, "ambientColor");
 			DiffuseColor = GL.GetUniformLocation(glprog, "diffuseColor");
-			AmbientValue = GL.GetUniformLocation(glprog, "ambient");
-			DiffuseValue = GL.GetUniformLocation(glprog, "diffuse");
-			SpecularValue = GL.GetUniformLocation(glprog, "specular");
+			AppearValue = GL.GetUniformLocation(glprog, "appear");
+			CameraRange = GL.GetUniformLocation(glprog, "camRange");
+			FogRange = GL.GetUniformLocation(glprog, "fogRange");
+			FogColor = GL.GetUniformLocation(glprog, "fogColor");
 			GL.Uniform1(GL.GetUniformLocation(glprog, "texture"), 0);
 			GL.UseProgram(0);
 		}
@@ -107,19 +108,25 @@ namespace OpenVice.Graphics.Shaders {
 		/// Diffuse color multiplier<para/>
 		/// Цвет освещённости
 		/// </summary>
-		public static int DiffuseValue { get; private set; }
+		public static int AppearValue { get; private set; }
 
 		/// <summary>
-		/// Ambient color multiplier<para/>
-		/// Цвет затемнённых участков
+		/// Camera far plane range<para/>
+		/// Дальность прорисовки камеры
 		/// </summary>
-		public static int AmbientValue { get; private set; }
+		public static int CameraRange { get; private set; }
 
 		/// <summary>
-		/// Specular color multiplier<para/>
-		/// Цвет затемнённых участков
+		/// Fog start range<para/>
+		/// Расстояние начала тумана
 		/// </summary>
-		public static int SpecularValue { get; private set; }
+		public static int FogRange { get; private set; }
+
+		/// <summary>
+		/// Fog color<para/>
+		/// Цвет тумана
+		/// </summary>
+		public static int FogColor { get; private set; }
 
 		/// <summary>
 		/// Vertex program for this shader<para/>
@@ -143,7 +150,8 @@ namespace OpenVice.Graphics.Shaders {
 				mat4 completeMat = projMatrix * modelMatrix * objectMatrix;
 				texCoords = gl_MultiTexCoord0.xy;
 				lerpColor = gl_Color;
-				gl_Position = completeMat * gl_Vertex;
+				vec4 pos = completeMat * gl_Vertex;
+				gl_Position = pos;
 			}
 		";
 
@@ -158,9 +166,10 @@ namespace OpenVice.Graphics.Shaders {
 			uniform vec4 tintColor;
 			uniform vec3 diffuseColor;
 			uniform vec3 ambientColor;
-			uniform float ambient;
-			uniform float diffuse;
-			uniform float specular;
+			uniform vec3 fogColor;
+			uniform float fogRange;
+			uniform float camRange;
+			uniform float appear;
 			
 			// Texture coords
 			// Текстурные координаты
@@ -170,8 +179,18 @@ namespace OpenVice.Graphics.Shaders {
 			// Processing fragment
 			// Обработка фрагмента
 			void main() {
-				vec4 litColor = vec4(mix(ambientColor.rgb, vec3(1.0, 1.0, 1.0), lerpColor.rgb), 1.0);
-				gl_FragColor = texture2D(texture, texCoords.xy) * litColor * tintColor;
+				vec4 tex = texture2D(texture, texCoords.xy);
+				vec4 litColor = vec4(mix(ambientColor.rgb, diffuseColor.rgb, lerpColor.rgb), 1.0);
+				float fog = clamp(gl_FragCoord.z / gl_FragCoord.w, 0, camRange-fogRange)/(camRange-fogRange);
+				gl_FragColor = mix(
+					(
+						tex * 
+						litColor * 
+						tintColor * 
+						vec4(1.0, 1.0, 1.0, appear * lerpColor.a)
+					), 
+					vec4(fogColor, tex.a * litColor.a * tintColor.a * appear * lerpColor.a),
+				fog);
 			}
 		";
 

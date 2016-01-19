@@ -49,7 +49,7 @@ namespace OpenVice.Managers {
 								TexDictionary = p.Text[2].ToLower(),
 								DrawDistance = new float[p.Text[3].ToInt()],
 								IsTimed = false,
-								Flags = p.Text[p.Text.Length - 1].ToUInt()
+								Flags = new ItemDefinition.FlagsContainer(p.Text[p.Text.Length - 1].ToUInt())
 							};
 							for (int i = 0; i < d.DrawDistance.Length; i++) {
 								d.DrawDistance[i] = p.Text[4 + i].ToFloat();
@@ -67,7 +67,7 @@ namespace OpenVice.Managers {
 								TexDictionary = p.Text[2].ToLower(),
 								DrawDistance = new float[p.Text[3].ToInt()],
 								IsTimed = true,
-								Flags = p.Text[p.Text.Length - 3].ToUInt(),
+								Flags = new ItemDefinition.FlagsContainer(p.Text[p.Text.Length - 3].ToUInt()),
 								TimeOn = p.Text[p.Text.Length - 2].ToInt(),
 								TimeOff = p.Text[p.Text.Length - 1].ToInt()
 							};

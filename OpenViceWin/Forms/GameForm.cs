@@ -37,6 +37,7 @@ namespace OpenVice.Forms {
 
 			Viewport.Size = new Vector2(ClientSize.Width, ClientSize.Height);
 			Camera.Zoom = 1f;
+			Camera.FarClip = 2000f;
 		}
 
 		/// <summary>

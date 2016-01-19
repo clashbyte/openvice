@@ -210,6 +210,7 @@ namespace OpenVice.Graphics {
 		static void GenerateEmptyTex() {
 			// Generate colormap
 			// Создание массива цветов
+			/*
 			byte[] data = new byte[128*128*4];
 			for (int y = 0; y < 128; y++) {
 				bool col = ((y/16) % 2) == 1;
@@ -232,14 +233,15 @@ namespace OpenVice.Graphics {
 					}
 
 				}
-			}
+			}*/
+			byte[] data = new byte[] { 255, 255, 255, 255 };
 
 			// Sending to GL
 			// Отправка в GL
 			GL.Enable(EnableCap.Texture2D);
 			EmptyTexture = GL.GenTexture();
 			GL.BindTexture(TextureTarget.Texture2D, EmptyTexture);
-			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Four, 128, 128, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+			GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Four, 1, 1, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)All.Nearest);
 			GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)All.Nearest);
 			GL.BindTexture(TextureTarget.Texture2D, 0);

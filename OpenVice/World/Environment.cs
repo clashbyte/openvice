@@ -42,8 +42,8 @@ namespace OpenVice.World {
 				}
 			}
 
-			Graphics.Renderer.SkyState = TimeCycleManager.GetCurrent(0, Hour, Minute);
-
+			Graphics.Renderer.SkyState = TimeCycleManager.GetCurrent(2, Hour, Minute);
+			Entities.Camera.FarClip = Graphics.Renderer.SkyState.CameraClip;
 
 		}
 	

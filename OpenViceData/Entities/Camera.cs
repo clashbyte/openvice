@@ -30,5 +30,11 @@ namespace OpenVice.Entities {
 		/// </summary>
 		public static float Zoom { get; set; }
 
+		/// <summary>
+		/// Range where the camera ends rasterizing tris<para/>
+		/// Расстояние, после которого камера не рисует треугольники
+		/// </summary>
+		public static float FarClip { get; set; }
+
 	}
 }

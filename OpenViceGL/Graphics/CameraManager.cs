@@ -18,13 +18,7 @@ namespace OpenVice.Graphics {
 		/// Camera near clipplane distance<para/>
 		/// Расположение ближнего предела камеры
 		/// </summary>
-		const float CameraNear = 0.1f;
-
-		/// <summary>
-		/// Camera far clipplane distance<para/>
-		/// Расположение дальнего предела камеры
-		/// </summary>
-		const float CameraFar = 2000f;
+		const float CameraNear = 0.5f;
 
 		/// <summary>
 		/// Flag that position matrix need to be rebuilt<para/>
@@ -98,8 +92,11 @@ namespace OpenVice.Graphics {
 		/// </summary>
 		static float zoom;
 
-		// matrix = Matrix4.CreatePerspectiveFieldOfView((float)Math.PI/3f/zoom, aspect, 0.1f, 5000f);
-		// modelView = Matrix4.CreateRotationX(-angles.X * 0.0174f) * Matrix4.CreateRotationY(-angles.Y * 0.0174f) * Matrix4.CreateTranslation(position.X, position.Y, -position.Z);
+		/// <summary>
+		/// Range where the camera ends rasterizing tris<para/>
+		/// Расстояние, после которого камера не рисует треугольники
+		/// </summary>
+		static float farClip;
 
 		/// <summary>
 		/// Synchronize camera and viewport variables<para/>
@@ -125,8 +122,9 @@ namespace OpenVice.Graphics {
 
 			// Camera zoom
 			// Увеличение камеры
-			if (Camera.Zoom != zoom) {
+			if (Camera.Zoom != zoom || Camera.FarClip != farClip) {
 				zoom = Camera.Zoom;
+				farClip = Camera.FarClip;
 				needViewRebuild = true;
 			}
 
@@ -171,7 +169,7 @@ namespace OpenVice.Graphics {
 			// Пересчёт матрицы проекции
 			if (needViewRebuild) {
 				projMatrix =
-					Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 3f / zoom, size.X/size.Y, CameraNear, CameraFar);
+					Matrix4.CreatePerspectiveFieldOfView((float)Math.PI / 3f / zoom, size.X/size.Y, CameraNear, farClip);
 				needViewRebuild = false;
 			}
 
@@ -224,6 +222,14 @@ namespace OpenVice.Graphics {
 		public static void BindSkyUniforms(int projectionLocation, int modelLocation) {
 			GL.UniformMatrix4(projectionLocation, false, ref projMatrix);
 			GL.UniformMatrix4(modelLocation, false, ref skyMatrix);
+		}
+
+		/// <summary>
+		/// Returns special camera range, for fog shaders<para/>
+		/// Возвращает специальное значение дальности, для шейдеров с туманом
+		/// </summary>
+		public static float Range() {
+			return farClip - CameraNear;
 		}
 	}
 }

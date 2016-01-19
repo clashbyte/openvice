@@ -247,6 +247,12 @@ namespace OpenVice.Files {
 					// Цвета вершин
 					if ((g.Flags & (int)GeometryFlags.Colors) > 0) {
 						g.Colors = f.ReadBytes(vertCount * 4);
+						for (int ci = 3; ci < g.Colors.Length; ci+=4) {
+							if (g.Colors[ci]<255) {
+								g.HasAlpha = true;
+								break;
+							}
+						}
 					}
 
 					// First texcoord set
@@ -474,6 +480,10 @@ namespace OpenVice.Files {
 						throw new Exception("[ModelFile] Unexpected chunk: " + h.Type);
 					}
 					f.BaseStream.Position += h.Size;
+				} else {
+					if (g.HasAlpha) {
+						m.HasAlpha = true;
+					}
 				}
 
 				h = ReadHeader(f);
@@ -647,6 +657,11 @@ namespace OpenVice.Files {
 			/// </summary>
 			public float[] Normals;
 
+			/// <summary>
+			/// Flag that this surface contains alpha channel<para/>
+			/// Флаг что у этой поверхности есть альфаканал
+			/// </summary>
+			public bool HasAlpha;
 		}
 
 		/// <summary>

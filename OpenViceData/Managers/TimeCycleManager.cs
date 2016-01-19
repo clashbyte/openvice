@@ -67,6 +67,9 @@ namespace OpenVice.Managers {
 						l.Text[20].ToFloat() / 255f
 					);
 
+					e.CameraClip = l.Text[33].ToFloat();
+					e.FogDistance = l.Text[34].ToFloat();
+
 					// Storing data
 					// Сохранение данных
 					ea[w, h] = e;
@@ -111,7 +114,9 @@ namespace OpenVice.Managers {
 					DiffuseDynamic = new Vector3(0.8f, 0.8f, 0.8f),
 					DirectLight = new Vector3(1f, 1f, 1f),
 					SkyTop = new Vector3(0.8f, 0.8f, 0.8f),
-					SkyBottom = new Vector3(0.1f, 0.1f, 0.1f)
+					SkyBottom = new Vector3(0.1f, 0.1f, 0.1f),
+					FogDistance = 100,
+					CameraClip = 2000,
 				};
 			}
 		}
@@ -157,6 +162,18 @@ namespace OpenVice.Managers {
 			/// </summary>
 			public Vector3 SkyTop, SkyBottom;
 
+			/// <summary>
+			/// Fog range<para/>
+			/// Расстояние тумана
+			/// </summary>
+			public float FogDistance;
+
+			/// <summary>
+			/// Camera range<para/>
+			/// Дальность прорисовки
+			/// </summary>
+			public float CameraClip;
+
 			/*
 			public Vector3 sunColor, sunCoronaColor;
 			public float sunCoreSize, sunCoronaSize;
@@ -182,6 +199,8 @@ namespace OpenVice.Managers {
 					DirectLight		= Vector3.Lerp(e.DirectLight, et.DirectLight, delta),
 					SkyTop			= Vector3.Lerp(e.SkyTop, et.SkyTop, delta),
 					SkyBottom		= Vector3.Lerp(e.SkyBottom, et.SkyBottom, delta),
+					FogDistance		= e.FogDistance + (et.FogDistance-e.FogDistance) * delta,
+					CameraClip		= e.CameraClip + (et.CameraClip - e.CameraClip) * delta,
 				};
 			}
 
