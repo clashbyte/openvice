@@ -30,12 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BEPUphysics">
-      <HintPath>..\..\Libs\BEPUphysics.dll</HintPath>
-    </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Quake\Libs\OpenTK.dll</HintPath>
+      <HintPath>..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -50,6 +47,7 @@
     <Compile Include="Controls\Input.cs" />
     <Compile Include="Controls\Key.cs" />
     <Compile Include="Controls\MouseButton.cs" />
+    <Compile Include="Dev\DebugStuff.cs" />
     <Compile Include="Engine\Core.cs" />
     <Compile Include="Entities\StaticProxy.cs" />
     <Compile Include="Managers\CityManager.cs" />
@@ -67,7 +65,10 @@
       <Name>OpenViceGL</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

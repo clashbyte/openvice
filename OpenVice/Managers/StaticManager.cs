@@ -1,9 +1,6 @@
 ﻿using OpenVice.Data;
 using OpenVice.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using OpenTK;
 
@@ -59,7 +56,7 @@ namespace OpenVice.Managers {
 						Range = ide.DrawDistance[0],
 						Coords = new Graphics.Transform() {
 							Position = p.Position,
-							Scale = 1f,
+							Scale = p.Scale,
 							Angles = p.Angle,
 						},
 						Timed = ide.IsTimed,
@@ -111,7 +108,7 @@ namespace OpenVice.Managers {
 							Range = ide.DrawDistance[0],
 							Coords = new Graphics.Transform() {
 								Position = p.Position,
-								Scale = 1f,
+								Scale = p.Scale,
 								Angles = p.Angle,
 							},
 							Timed = ide.IsTimed,
@@ -130,7 +127,7 @@ namespace OpenVice.Managers {
 							Range = ide.DrawDistance[0],
 							Coords = new Graphics.Transform() {
 								Position = p.Position,
-								Scale = 1f,
+								Scale = p.Scale,
 								Angles = p.Angle,
 							},
 							Timed = ide.IsTimed,
@@ -163,6 +160,16 @@ namespace OpenVice.Managers {
 		}
 
 		/// <summary>
+		/// Update objects<para/>
+		/// Обновление логики объектов
+		/// </summary>
+		public static void Update(float delta) {
+			foreach (StaticProxy p in Statics) {
+				p.Update(delta);
+			}
+		}
+
+		/// <summary>
 		/// Background culling process<para/>
 		/// Фоновый процесс отсечения
 		/// </summary>
@@ -185,7 +192,10 @@ namespace OpenVice.Managers {
 							Vector2 range = new Vector2(p.MainMesh.Coords.Position.X, p.MainMesh.Coords.Position.Z);
 							p.State = StaticProxy.VisState.Hidden;
 
-							if (p.MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.DisableDrawDistance] || (range - cam).LengthSquared <= p.MainMesh.Range * p.MainMesh.Range) {
+							float dist = (range - cam).LengthSquared;
+							p.CollisionActive = dist <= PhysicsManager.VisibleRange * PhysicsManager.VisibleRange * 1.2f;
+
+							if (p.MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.DisableDrawDistance] || dist <= p.MainMesh.Range * p.MainMesh.Range) {
 								// Main mesh is visible
 								// Основной меш виден
 								p.State = StaticProxy.VisState.MeshVisible;
@@ -201,6 +211,7 @@ namespace OpenVice.Managers {
 							}
 						} else {
 							p.State = StaticProxy.VisState.Hidden;
+							p.CollisionActive = false;
 						}
 					}
 					Thread.Sleep(0);

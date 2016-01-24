@@ -29,6 +29,19 @@ namespace OpenVice.Files {
 		}
 
 		/// <summary>
+		/// Read ZY-YZ reversed vector<para/>
+		/// Чтение перевернутого ZY-YZ вектора
+		/// </summary>
+		/// <returns>Correct vector<para/>Исправленный вектор</returns>
+		public static OpenTK.Vector3 ReadVCVector(this BinaryReader f) {
+			OpenTK.Vector3 v = new OpenTK.Vector3();
+			v.X = f.ReadSingle();
+			v.Z = f.ReadSingle();
+			v.Y = f.ReadSingle();
+			return v;
+		}
+
+		/// <summary>
 		/// Parse int from string<para/>
 		/// Разбор строки в int
 		/// </summary>

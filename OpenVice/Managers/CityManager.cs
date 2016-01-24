@@ -25,6 +25,10 @@ namespace OpenVice.Managers {
 		/// </summary>
 		public static CityState State { get; private set; }
 
+		/// <summary>
+		/// Current interior<para/>
+		/// Текущий интерьер
+		/// </summary>
 		public static ItemPlacement.Interior Interior = ItemPlacement.Interior.World;
 
 		/// <summary>
@@ -74,10 +78,10 @@ namespace OpenVice.Managers {
 			// Reading collision files
 			// Чтение файлов коллизии
 			State = CityState.ReadingCollisions;
-			// TODODODODDODDODDOODOD
+			CollisionManager.Init();
 
-			// TODODODODOODODDOODDODO
-
+			// Creating static object proxies
+			// Создание прокси-объектов статики
 			State = CityState.CreatingPlacements;
 			StaticManager.Init();
 

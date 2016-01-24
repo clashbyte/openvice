@@ -42,11 +42,7 @@ namespace OpenVice.Controls {
 			}
 
 			Camera.Angles = new Vector3(viewY, viewX, 0);
-			Matrix4 rot = Matrix4.CreateRotationZ(Camera.Angles.Z * 0.0174f) *
-					Matrix4.CreateRotationX(Camera.Angles.X * 0.0174f) *
-					Matrix4.CreateRotationY(Camera.Angles.Y * 0.0174f);
-
-			Camera.Position += Vector3.TransformVector(movement, rot)*5f;
+			Camera.Position += Camera.TransformDirection(movement)*5f;
 		}
 
 

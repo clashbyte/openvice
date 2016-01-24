@@ -30,8 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK">
-      <HintPath>..\..\Libs\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -40,8 +41,10 @@
   <ItemGroup>
     <Compile Include="Dev\DXTDecoder.cs" />
     <Compile Include="Dev\GLExtensions.cs" />
+    <Compile Include="Graphics\Renderers\DebugRenderer.cs" />
     <Compile Include="Graphics\Renderers\SkyRenderer.cs" />
     <Compile Include="Graphics\Renderers\StaticRenderer.cs" />
+    <Compile Include="Graphics\Shaders\DebugShader.cs" />
     <Compile Include="Graphics\Shaders\ShaderBase.cs" />
     <Compile Include="Graphics\Shaders\SkyShader.cs" />
     <Compile Include="Graphics\Shaders\StaticShader.cs" />
@@ -63,7 +66,10 @@
       <Name>OpenViceData</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -12,6 +12,9 @@ namespace OpenVice.Engine {
 	/// </summary>
 	public static class Core {
 
+		static Model man;
+		static TextureDictionary manTex;
+
 		/// <summary>
 		/// Initialize engine<para/>
 		/// Инициализация движка
@@ -23,6 +26,10 @@ namespace OpenVice.Engine {
 			// Initialize audio system
 			// Инициализация аудио
 			AudioManager.Init();
+
+			// Initialize physics engine
+			// Инициализация физического движка
+			PhysicsManager.Init();
 
 			// Setting game path
 			// Установка пути игры
@@ -45,19 +52,10 @@ namespace OpenVice.Engine {
 			// Запуск загрузки города
 			CityManager.Init();
 
-			/*
-			testModel = new Model(
-					new ModelFile(ArchiveManager.Get("ambulan.dff"), true),
-					true,
-					true
-				);
-
-			testTextures = new TextureDictionary(
-					new TextureFile(ArchiveManager.Get("ambulan.txd"), true),
-					true, 
-					true
-				);
-			 */
+			// Update debug stuff
+			// Обновление дебага
+			Dev.DebugStuff.Init();
+			 
 		}
 
 		/// <summary>
@@ -75,19 +73,25 @@ namespace OpenVice.Engine {
 			// Обновление окружения
 			Environment.Update(delta);
 
+			// Update city if it's loaded
+			// Обработка города если он загружен
+			if (CityManager.State == CityManager.CityState.Complete) {
+				StaticManager.Update(delta);
+			}
+
 			Controls.FreeLook.Control();
 
+			// Update physics
+			// Обновление физики
+			PhysicsManager.Update(delta);
 
 			// Updating audio engine
 			// Обновление аудиодвижка
 			AudioManager.Update();
 
-			if (Controls.Input.KeyPress(Key.KeypadPlus)) {
-				CityManager.Interior = (Data.ItemPlacement.Interior)(((int)CityManager.Interior+1) % 19);
-			}
-			if (Controls.Input.KeyPress(Key.Keypad0)) {
-				CityManager.Interior = Data.ItemPlacement.Interior.World;
-			}
+			// Update debug stuff
+			// Обновление дебага
+			Dev.DebugStuff.Update();
 		}
 
 		/// <summary>
@@ -102,6 +106,10 @@ namespace OpenVice.Engine {
 			if (CityManager.State == CityManager.CityState.Complete) {
 				StaticManager.Render(delta);
 			}
+
+			// Update debug stuff
+			// Обновление дебага
+			Dev.DebugStuff.Render();
 
 			// Rendering single frame
 			// Отрисовка одного кадра

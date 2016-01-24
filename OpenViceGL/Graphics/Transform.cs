@@ -36,7 +36,7 @@ namespace OpenVice.Graphics {
 			}
 			set {
 				angles = new Quaternion(value.X, value.Y, -value.Z, -value.W);
-				needNewMatrix = false;
+				needNewMatrix = true;
 			}
 		}
 
@@ -44,7 +44,7 @@ namespace OpenVice.Graphics {
 		/// Model scale in 3D space<para/>
 		/// Размер модели в 3D-мире
 		/// </summary>
-		public float Scale {
+		public Vector3 Scale {
 			get {
 				return scale;
 			}
@@ -75,7 +75,7 @@ namespace OpenVice.Graphics {
 		// Скрытые, GL-дружелюбные значения
 		Vector3 position = Vector3.Zero;
 		Quaternion angles = Quaternion.Identity;
-		float scale = 1f;
+		Vector3 scale = Vector3.One;
 		Matrix4 mat = Matrix4.Identity;
 		bool needNewMatrix = true;
 

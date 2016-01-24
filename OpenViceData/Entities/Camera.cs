@@ -36,5 +36,17 @@ namespace OpenVice.Entities {
 		/// </summary>
 		public static float FarClip { get; set; }
 
+		/// <summary>
+		/// Transform vector from camera local space to global<para/>
+		/// Перевод вектора из системы координат камеры в глобальные
+		/// </summary>
+		/// <param name="vec">Vector to transform<para/>Переводимый вектор</param>
+		public static Vector3 TransformDirection(Vector3 vec) {
+			Matrix4 rot = Matrix4.CreateRotationZ(Camera.Angles.Z * 0.0174f) *
+					Matrix4.CreateRotationX(Camera.Angles.X * 0.0174f) *
+					Matrix4.CreateRotationY(Camera.Angles.Y * 0.0174f);
+			return Vector3.TransformVector(vec, rot);
+		}
+
 	}
 }

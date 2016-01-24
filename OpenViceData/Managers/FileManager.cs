@@ -85,6 +85,7 @@ namespace OpenVice.Managers {
 						// Файл IDE
 						case "ide":
 							ide.Add(l.Text[1]);
+							col.Add(System.IO.Path.ChangeExtension(l.Text[1], ".col"));
 							break;
 
 						// Item placement

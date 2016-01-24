@@ -3,6 +3,7 @@ using OpenVice.Files;
 using OpenVice.Graphics;
 using OpenVice.Graphics.Renderers;
 using OpenVice.Managers;
+using OpenVice.Physics;
 using OpenVice.World;
 
 namespace OpenVice.Entities {
@@ -50,6 +51,24 @@ namespace OpenVice.Entities {
 		public bool LodAssigned;
 
 		/// <summary>
+		/// Flag that we complete collision mesh search<para/>
+		/// Флаг, что мы закончили поиск меша столкновений
+		/// </summary>
+		public bool CollisionsFound;
+
+		/// <summary>
+		/// Static collider for this entity<para/>
+		/// Коллайдер для этого объекта
+		/// </summary>
+		public StaticCollider Collider;
+
+		/// <summary>
+		/// Flag that collision mesh must be initialized<para/>
+		/// Флаг что меш столкновений должен быть инициализирован
+		/// </summary>
+		public bool CollisionActive;
+
+		/// <summary>
 		/// Sending models to rendering queue<para/>
 		/// Отправка моделей на отрисовку
 		/// </summary>
@@ -62,6 +81,9 @@ namespace OpenVice.Entities {
 			// Check for fading
 			// Проверка на прозрачность
 			switch (State) {
+				
+				// Proxy is out of both mesh and LOD ranges
+				// Прокси-объект находится за пределами обоих расстояний
 				case VisState.Hidden:
 					if (MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeEnabled] || !MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeDisabled]) {
 						if (LODMesh!=null) {
@@ -86,6 +108,9 @@ namespace OpenVice.Entities {
 						}
 					}
 					break;
+
+				// Proxy matches LOD distance
+				// Прокси-объект попадает в радиус LOD'а
 				case VisState.LodVisible:
 					needLod = true;
 					if (MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeEnabled] || !MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeDisabled]) {
@@ -121,6 +146,9 @@ namespace OpenVice.Entities {
 						LODMesh.Opacity = 1f;
 					}
 					break;
+
+				// Proxy matches main mesh radius or radius culling is disabled
+				// Прокси объект попадает в радиус меша, или отсечение по радиусу отключено
 				case VisState.MeshVisible:
 					needMesh = true;
 					if (MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeEnabled] || !MainMesh.Definition.Flags[ItemDefinition.DefinitionFlags.FadeDisabled]) {
@@ -164,7 +192,8 @@ namespace OpenVice.Entities {
 			}
 
 
-			// Lod is needed
+			// Lod mesh must be rendered
+			// Низкополигональная модель должна быть нарисована
 			if (LODMesh != null) {
 				LODMesh.Process(needLod);
 				if (needLod && LODMesh.IsTimedVisible()) {
@@ -172,14 +201,52 @@ namespace OpenVice.Entities {
 				}
 			}
 
-			// Mesh is needed
+			// Mesh must be rendered
+			// Высокополигональная модель должна быть нарисована
 			MainMesh.Process(needMesh);
 			if (needMesh && MainMesh.IsTimedVisible()) {
 				MainMesh.Render();
 			}
-			
+		}
 
+		/// <summary>
+		/// Updating collision meshes and stuff<para/>
+		/// Поиск и обновление мешей столкновений
+		/// </summary>
+		public void Update(float delta) {
+			// Search for collision data if needed
+			// Поиск данных о столкновениях
+			if (CollisionActive && !CollisionsFound) {
+				CollisionFile.Group col = null;
+				if (CollisionManager.Collisions.ContainsKey(MainMesh.Definition.ID)) {
+					col = CollisionManager.Collisions[MainMesh.Definition.ID];
+				} else {
+					if (CollisionManager.NamedCollisions.ContainsKey(MainMesh.Definition.ModelName)) {
+						col = CollisionManager.NamedCollisions[MainMesh.Definition.ModelName];
+					}
+				}
+				if (col!=null) {
+					Collider = new StaticCollider(
+						col,
+ 						MainMesh.Coords.Position,
+						MainMesh.Coords.Angles,
+						MainMesh.Coords.Scale
+					);
+				}
+				CollisionsFound = true;
+			}
 
+			// Update collisions
+			// Обновление коллизий
+			if (Collider != null) {
+				if (Collider.IsEnabled != CollisionActive) {
+					if (CollisionActive) {
+						Collider.Enable();
+					}else{
+						Collider.Disable();
+					}
+				}
+			}
 		}
 
 		/// <summary>
