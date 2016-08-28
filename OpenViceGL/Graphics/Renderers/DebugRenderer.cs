@@ -121,6 +121,34 @@ namespace OpenVice.Graphics.Renderers {
 		}
 
 		/// <summary>
+		/// Line primitive<para/>
+		/// Примитив коробки
+		/// </summary>
+		public class Line : Primitive {
+
+			/// <summary>
+			/// Start and end points<para/>
+			/// Точки начала и окончания
+			/// </summary>
+			public Vector3 Start, End;
+
+			public override void Render() {
+				// Setting uniforms
+				Matrix4 m = Matrix4.Identity;
+				GL.LineWidth(LineSize);
+				GL.UniformMatrix4(DebugShader.ChildMatrix, false, ref m);
+				GL.Uniform3(DebugShader.Color, Color);
+
+				// Rendering
+				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+				GL.Begin(PrimitiveType.Lines);
+				GL.Vertex3(Start); GL.Vertex3(End);
+				GL.End();
+				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+			}
+		}
+
+		/// <summary>
 		/// Box primitive<para/>
 		/// Коробка
 		/// </summary>

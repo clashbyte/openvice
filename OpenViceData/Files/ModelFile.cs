@@ -379,6 +379,49 @@ namespace OpenVice.Files {
 									g.Binary[sp] = bn;
 								}
 								break;
+
+							// Skinning info
+							// Данные скиннинга
+							case ChunkType.Skin:
+
+								// Number of bones
+								// Количество костей
+								g.BoneCount = f.ReadByte();
+								int usedBones = f.ReadByte();
+
+								// Number of bones per single vertex
+								// Количество костей на одну вершинуы
+								g.MaxBonesPerVertex = f.ReadByte();
+								f.BaseStream.Position += 1;
+
+								if (usedBones>0) {
+									f.BaseStream.Position += usedBones;
+								}
+
+								// Indices and weights
+								// Индексы и веса
+								int numVerts = g.Vertices.Length / 3;
+								g.Bones = f.ReadBytes(numVerts * 4);
+								g.Weights = new float[numVerts * 4];
+								for (int b = 0; b < g.Weights.Length; b++) {
+									g.Weights[b] = f.ReadSingle();
+								}
+
+								// Skip matrices - we build our own
+								// Пропускаем матрицы - мы построим свои
+								if (g.MaxBonesPerVertex == 0) {
+									f.BaseStream.Position += 4 * g.BoneCount;
+								}
+								f.BaseStream.Position += g.BoneCount * 64;
+
+								// Skipping zeroes
+								// Пропуск нескольких нулей
+								if (usedBones>0) {
+									f.BaseStream.Position += 12;
+								}
+
+								break;
+
 							default:
 								f.BaseStream.Position += h.Size;
 								break;
@@ -656,6 +699,30 @@ namespace OpenVice.Files {
 			/// Нормали вершин
 			/// </summary>
 			public float[] Normals;
+
+			/// <summary>
+			/// Vertex bones<para/>
+			/// Кости вершины
+			/// </summary>
+			public byte[] Bones;
+
+			/// <summary>
+			/// Vertex weights for skinning<para/>
+			/// Вес вершин для скиннинга
+			/// </summary>
+			public float[] Weights;
+
+			/// <summary>
+			/// Number of bones for this skin<para/>
+			/// Количество вершин для данной модели
+			/// </summary>
+			public int BoneCount;
+
+			/// <summary>
+			/// Maximal number of bones per single vertex<para/>
+			/// Максимальное количество костей, влияющих на вершину
+			/// </summary>
+			public int MaxBonesPerVertex;
 
 			/// <summary>
 			/// Flag that this surface contains alpha channel<para/>

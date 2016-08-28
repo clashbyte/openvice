@@ -38,6 +38,9 @@ namespace OpenVice.Managers {
 			// Создание симуляции
 			World = new Space();
 			World.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -9.81f, 0);
+			BEPUphysics.Settings.CollisionDetectionSettings.DefaultMargin = 0f;
+			BEPUphysics.Settings.CollisionDetectionSettings.AllowedPenetration = 0f;
+			//BEPUphysics.Settings.CollisionResponseSettings.PenetrationRecoveryStiffness = 0.005f;
 		}
 
 		/// <summary>

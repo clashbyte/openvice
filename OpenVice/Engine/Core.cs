@@ -12,9 +12,6 @@ namespace OpenVice.Engine {
 	/// </summary>
 	public static class Core {
 
-		static Model man;
-		static TextureDictionary manTex;
-
 		/// <summary>
 		/// Initialize engine<para/>
 		/// Инициализация движка

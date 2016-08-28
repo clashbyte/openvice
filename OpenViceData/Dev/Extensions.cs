@@ -17,7 +17,7 @@ namespace OpenVice.Files {
 		/// Чтение строки указанной длины
 		/// </summary>
 		/// <param name="Length">Length of string<para/>Длина строки</param>
-		/// <returns></returns>
+		/// <returns>String<para/>Строка</returns>
 		public static string ReadVCString(this BinaryReader f, int length) {
 			char[] c = f.ReadChars(length);
 			for (int i = 0; i < c.Length; i++) {
@@ -26,6 +26,27 @@ namespace OpenVice.Files {
 				}
 			}
 			return new string(c);
+		}
+
+		/// <summary>
+		/// Read octet-aligned string<para/>
+		/// Чтение строки, кратной четырём байтам
+		/// </summary>
+		/// <returns>String<para/>Строка</returns>
+		public static string ReadOctetString(this BinaryReader f) {
+			string o = "";
+			while (true) {
+				char c = f.ReadChar();
+				if (c=='\0') {
+					break;
+				}
+				o += c;
+			}
+			int skip = (o.Length+1) % 4;
+			if (skip>0) {
+				f.BaseStream.Position += (4 - skip);
+			}
+			return o;
 		}
 
 		/// <summary>
@@ -39,6 +60,30 @@ namespace OpenVice.Files {
 			v.Z = f.ReadSingle();
 			v.Y = f.ReadSingle();
 			return v;
+		}
+
+		/// <summary>
+		/// Read ZY-YZ reversed quaternion<para/>
+		/// Чтение перевернутого ZY-YZ кватерниона
+		/// </summary>
+		/// <returns>Correct quaternion<para/>Исправленный кватернион</returns>
+		public static OpenTK.Quaternion ReadVCQuaternion(this BinaryReader f) {
+			OpenTK.Quaternion q = new OpenTK.Quaternion();
+			q.X = -f.ReadSingle();
+			q.Z = -f.ReadSingle();
+			q.Y = -f.ReadSingle();
+			q.W = -f.ReadSingle();
+			return q;
+		}
+
+		/// <summary>
+		/// Reorder matrix to VC quaternion<para/>
+		/// Пересчёт матрицы в VC-кватернион
+		/// </summary>
+		/// <returns>Correct quaternion<para/>Исправленный кватернион</returns>
+		public static OpenTK.Quaternion ToVCQuaternion(this OpenTK.Matrix3 rotation) {
+			OpenTK.Quaternion q = OpenTK.Quaternion.FromMatrix(rotation);
+			return new OpenTK.Quaternion(-q.X, -q.Z, -q.Y, -q.W);
 		}
 
 		/// <summary>
@@ -71,5 +116,17 @@ namespace OpenVice.Files {
 			return float.Parse(s.Trim().Replace('.', ','), System.Globalization.NumberStyles.Float);
 		}
 
+		/// <summary>
+		/// Scale up int to %4<para/>
+		/// Подгонка числа под кратное четырем
+		/// </summary>
+		/// <returns>Octet int<para/>Число кратное 4</returns>
+		public static int AlignToOctet(this int num) {
+			int i = num % 4;
+			if (i>0) {
+				num = num + (4 - i);
+			}
+			return num; 
+		}
 	}
 }

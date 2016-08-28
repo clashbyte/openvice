@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using OpenTK;
+using OpenVice.Files;
+using OpenVice.Graphics;
 
 namespace OpenVice.Dev {
 
@@ -17,6 +19,10 @@ namespace OpenVice.Dev {
 		static Graphics.Renderers.DebugRenderer rend;
 		static Graphics.Renderers.DebugRenderer.Box box;
 
+		static Graphics.Model man;
+		static Graphics.TextureDictionary manTex;
+		static Graphics.Renderers.SkinnedRenderer re;
+
 
 		/// <summary>
 		/// Initialize debug data<para/>
@@ -24,13 +30,24 @@ namespace OpenVice.Dev {
 		/// </summary>
 		public static void Init() {
 
-			Entities.Camera.Position = new OpenTK.Vector3(-1647.534f, 26.54692f, -667.5128f);
+			//Entities.Camera.Position = new OpenTK.Vector3(-1647.534f, 26.54692f, -667.5128f);
 
 			rend = new Graphics.Renderers.DebugRenderer();
 			box = new Graphics.Renderers.DebugRenderer.Box();
 			box.LineSize = 2f;
 			box.Size = Vector3.One * 0.5f;
-			rend.Primitives.Add(box);
+			//rend.Primitives.Add(box);
+
+			AnimationFile fg = new AnimationFile(PathManager.GetAbsolute("anim/ped.ifp"));
+
+
+			man = new Model(new ModelFile(ArchiveManager.Get("cop.dff"), true), true, true);
+			manTex = new TextureDictionary(new TextureFile(ArchiveManager.Get("cop.txd"), true), true, true);
+			
+
+
+			re = new Graphics.Renderers.SkinnedRenderer();
+			RenderBonesRecursively(man.Children);
 		}
 
 		/// <summary>
@@ -63,7 +80,31 @@ namespace OpenVice.Dev {
 		/// Отрисовка дебаг-данных
 		/// </summary>
 		public static void Render() {
+			Graphics.Renderer.RenderQueue.Enqueue(re);
 			Graphics.Renderer.RenderQueue.Enqueue(rend);
+		}
+
+
+		static void RenderBonesRecursively(Model.Branch[] branches) {
+			foreach (Model.Branch b in branches) {
+				if (b.Parent!=null) {
+					rend.Primitives.Add(new Graphics.Renderers.DebugRenderer.Line() { 
+						Start = b.Matrix.ExtractTranslation() * 10f,
+						End = b.Parent.Matrix.ExtractTranslation() * 10f,
+						Color = new Vector3(1f, 1f, 0f),
+						LineSize = 3f
+					});
+				}
+				if (b.SubMeshes.Length > 0) {
+					re.SubMesh = b.SubMeshes[0];
+					re.SubmeshMatrix = b.Matrix;
+					re.BaseMatrix = Matrix4.CreateScale(10f);
+					re.Textures = manTex;
+				}
+				if (b.Children!=null) {
+					RenderBonesRecursively(b.Children);
+				}
+			}
 		}
 
 	}

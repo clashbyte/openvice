@@ -61,12 +61,12 @@
     <Compile Include="Data\ItemDefinition.cs" />
     <Compile Include="Data\ItemPlacement.cs" />
     <Compile Include="Dev\Console.cs" />
+    <Compile Include="Files\CollisionFile.cs" />
     <Compile Include="Physics\StaticCollider.cs" />
     <Compile Include="Files\AdfStream.cs" />
     <Compile Include="Files\AnimationFile.cs" />
     <Compile Include="Files\ArchiveFile.cs" />
     <Compile Include="Dev\Extensions.cs" />
-    <Compile Include="Files\CollisionFile.cs" />
     <Compile Include="Files\ModelFile.cs" />
     <Compile Include="Files\RenderWareFile.cs" />
     <Compile Include="Files\TextureFile.cs" />

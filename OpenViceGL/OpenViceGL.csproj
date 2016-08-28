@@ -42,10 +42,12 @@
     <Compile Include="Dev\DXTDecoder.cs" />
     <Compile Include="Dev\GLExtensions.cs" />
     <Compile Include="Graphics\Renderers\DebugRenderer.cs" />
+    <Compile Include="Graphics\Renderers\SkinnedRenderer.cs" />
     <Compile Include="Graphics\Renderers\SkyRenderer.cs" />
     <Compile Include="Graphics\Renderers\StaticRenderer.cs" />
     <Compile Include="Graphics\Shaders\DebugShader.cs" />
     <Compile Include="Graphics\Shaders\ShaderBase.cs" />
+    <Compile Include="Graphics\Shaders\SkinnedShader.cs" />
     <Compile Include="Graphics\Shaders\SkyShader.cs" />
     <Compile Include="Graphics\Shaders\StaticShader.cs" />
     <Compile Include="Managers\ModelManager.cs" />

@@ -25,6 +25,7 @@ namespace OpenVice.Graphics.Renderers {
 			set {
 				baseMatrix = value;
 				needNewMatrix = true;
+				needNewSphere = true;
 			}
 		}
 
@@ -39,6 +40,7 @@ namespace OpenVice.Graphics.Renderers {
 			set {
 				meshMatrix = value;
 				needNewMatrix = true;
+				needNewSphere = true;
 			}
 		}
 

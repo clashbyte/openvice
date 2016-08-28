@@ -314,13 +314,14 @@ namespace OpenVice.Graphics {
 				// Установка спецданных
 				ModelFile.Frame f = model.File.Frames[branchIndex];
 				Position = new Vector3(f.Position[0], f.Position[2], f.Position[1]);
-				Angles = Quaternion.FromMatrix(
+				Quaternion q = Quaternion.FromMatrix(
 					new Matrix3(
-							f.Rotation[0], f.Rotation[1], f.Rotation[2],
-							f.Rotation[3], f.Rotation[4], f.Rotation[5],
-							f.Rotation[6], f.Rotation[7], f.Rotation[8]
-						)
-					);
+						f.Rotation[0], f.Rotation[1], f.Rotation[2],
+						f.Rotation[3], f.Rotation[4], f.Rotation[5],
+						f.Rotation[6], f.Rotation[7], f.Rotation[8]
+					)
+				);
+				Angles = new Quaternion(-q.X, -q.Z, -q.Y, -q.W);
 				Scale = 1f;
 				ParentModel = model;
 				Parent = parent;
@@ -758,7 +759,7 @@ namespace OpenVice.Graphics {
 							// Setting up addressing and filtering
 							// Установка адресации и фильтрации
 							TextureFile.FilterMode fm = t.Filter;
-							if (!tex.Mipmapped) {
+							if (true) {//!tex.Mipmapped) {
 								switch (t.Filter) {
 									case TextureFile.FilterMode.MipNearest:
 										fm = TextureFile.FilterMode.Nearest;
