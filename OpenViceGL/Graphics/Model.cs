@@ -232,6 +232,44 @@ namespace OpenVice.Graphics {
 			public string Name { get; private set; }
 
 			/// <summary>
+			/// Original bone position<para/>
+			/// Исходное расположение кости
+			/// </summary>
+			public Vector3 OriginalPosition {
+				get; private set;
+			}
+
+			/// <summary>
+			/// Original bone rotation<para/>
+			/// Исходный поворот кости
+			/// </summary>
+			public Quaternion OriginalAngles {
+				get; private set;
+			}
+
+			/// <summary>
+			/// Original bone scale<para/>
+			/// Исходный скейл кости
+			/// </summary>
+			public float OriginalScale {
+				get; private set;
+			}
+
+			/// <summary>
+			/// Original inverted matrix for skinning
+			/// </summary>
+			public Matrix4 OriginalInvMatrix {
+				get; private set;
+			}
+
+			/// <summary>
+			/// Original bone index in file
+			/// </summary>
+			public int OriginalIndex {
+				get; private set;
+			}
+
+			/// <summary>
 			/// Model position in 3D space<para/>
 			/// Расположение модели в пространстве
 			/// </summary>
@@ -241,7 +279,8 @@ namespace OpenVice.Graphics {
 				}
 				set {
 					position = new Vector3(value.X, value.Y, -value.Z);
-					needNewMatrix = true;
+					UpdateChildrenMatrix();
+
 				}
 			}
 
@@ -255,7 +294,7 @@ namespace OpenVice.Graphics {
 				}
 				set {
 					angles = new Quaternion(value.X, value.Y, -value.Z, -value.W);
-					needNewMatrix = false;
+					UpdateChildrenMatrix();
 				}
 			}
 
@@ -269,7 +308,7 @@ namespace OpenVice.Graphics {
 				}
 				set {
 					scale = value;
-					needNewMatrix = true;
+					UpdateChildrenMatrix();
 				}
 			}
 
@@ -327,10 +366,16 @@ namespace OpenVice.Graphics {
 				Parent = parent;
 				Name = f.Name;
 				
+				OriginalIndex = branchIndex;
+				OriginalPosition = Position;
+				OriginalScale = Scale;
+				OriginalAngles = Angles;
+				
 				// Hack to rebuild matrix
 				// Хак для перестройки матрицы
-				needNewMatrix = true;
+				UpdateChildrenMatrix();
 				mat = Matrix;
+				OriginalInvMatrix = mat.Inverted();
 
 				// Analyze model's geometries for data
 				// Анализируем геометрию модели для создание сурфейсов
@@ -373,6 +418,19 @@ namespace OpenVice.Graphics {
 				SubMeshes = null;
 			}
 
+			/// <summary>
+			/// Rebuilding all children<para/>
+			/// Перестраиваем дочерние матрицы
+			/// </summary>
+			void UpdateChildrenMatrix() {
+				needNewMatrix = true;
+				if (Children != null) {
+					foreach (Branch branch in Children) {
+						branch.UpdateChildrenMatrix();
+					}
+				}
+			}
+
 		}
 
 		/// <summary>
@@ -393,6 +451,24 @@ namespace OpenVice.Graphics {
 			public Model ParentModel { get; private set; }
 
 			/// <summary>
+			/// Bone index buffer
+			/// </summary>
+			public int BoneIndexBuffer {
+				get {
+					return boneBuffer;
+				}
+			}
+
+			/// <summary>
+			/// Buffer with bone weight data
+			/// </summary>
+			public int BoneWeightBuffer {
+				get {
+					return boneWeightBuffer;
+				}
+			}
+
+			/// <summary>
 			/// Renderable surfaces<para/>
 			/// Группы индексов вершин с материалами
 			/// </summary>
@@ -411,7 +487,10 @@ namespace OpenVice.Graphics {
 			byte[] colorData;
 			float[] texCoord1Data;
 			float[] texCoord2Data;
+			byte[] boneData;
+			float[] boneWeightData;
 			int vertexBuffer, normalBuffer, colorBuffer, tex1Buffer, tex2Buffer;
+			int boneBuffer, boneWeightBuffer;
 			ModelFile.Geometry geometry;
 
 			/// <summary>
@@ -525,6 +604,21 @@ namespace OpenVice.Graphics {
 					}
 				}
 
+				// Decoding bones
+				// Декодим кости
+				if (geometry.Bones != null) {
+					boneData = new byte[geometry.Bones.Length];
+					for (int i = 0; i < boneData.Length; i ++) {
+						boneData[i] = geometry.Bones[i];
+					}
+				}
+				if (geometry.Weights != null) {
+					boneWeightData = new float[geometry.Weights.Length];
+					for (int i = 0; i < boneWeightData.Length; i++) {
+						boneWeightData[i] = geometry.Weights[i];
+					}
+				}
+
 				// Decoding indices
 				// Разбор индексов
 				List<Surface> surfs = new List<Surface>();
@@ -621,6 +715,19 @@ namespace OpenVice.Graphics {
 					texCoord2Data = null;
 				}
 
+				// Sending bone info
+				// Отправка данных о костях
+				if (boneData != null) {
+					boneBuffer = GL.GenBuffer();
+					GL.BindBuffer(BufferTarget.ArrayBuffer, boneBuffer);
+					GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(boneData.Length * sizeof(byte)), boneData, BufferUsageHint.StaticDraw);
+				}
+				if (boneWeightData != null) {
+					boneWeightBuffer = GL.GenBuffer();
+					GL.BindBuffer(BufferTarget.ArrayBuffer, boneWeightBuffer);
+					GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(boneWeightData.Length * sizeof(float)), boneWeightData, BufferUsageHint.StaticDraw);
+				}
+
 				// Sending indices
 				// Отправка индексов вершин
 				foreach (Surface s in Surfaces) {
@@ -690,6 +797,10 @@ namespace OpenVice.Graphics {
 						GL.BindBuffer(BufferTarget.ElementArrayBuffer, s.IndexBuffer);
 						GL.DrawElements(pt, s.IndexCount, DrawElementsType.UnsignedShort, IntPtr.Zero);
 						GL.DisableClientState(ArrayCap.TextureCoordArray);
+
+						for (int i = 0; i < 8; i++) {
+							GL.DisableVertexAttribArray(i);
+						}
 
 						// Incrementing counters
 						// Увеличение счётчиков
@@ -842,7 +953,7 @@ namespace OpenVice.Graphics {
 				}else{
 					GL.BindTexture(TextureTarget.Texture2D, Renderer.EmptyTexture);
 				}
-				renderer.SetupSurface(surf, mat, geometry);
+				renderer.SetupSurface(surf, mat, geometry, this);
 			}
 			
 			/// <summary>
@@ -869,12 +980,16 @@ namespace OpenVice.Graphics {
 				colorData		= null;
 				texCoord1Data	= null;
 				texCoord2Data	= null;
+				boneData		= null;
+				boneWeightData	= null;
 				if (vertexBuffer != 0)	GL.DeleteBuffer(vertexBuffer);
 				if (normalBuffer != 0)	GL.DeleteBuffer(normalBuffer);
 				if (colorBuffer != 0)	GL.DeleteBuffer(colorBuffer);
 				if (tex1Buffer != 0)	GL.DeleteBuffer(tex1Buffer);
 				if (tex2Buffer != 0)	GL.DeleteBuffer(tex2Buffer);
-				
+				if (boneBuffer != 0)	GL.DeleteBuffer(boneBuffer);
+				if (boneWeightBuffer != 0) GL.DeleteBuffer(boneWeightBuffer);
+
 			}
 
 			/// <summary>

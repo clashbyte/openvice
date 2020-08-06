@@ -88,7 +88,7 @@ namespace OpenVice.Graphics.Renderers {
 		/// </summary>
 		/// <param name="surf">Surface<para/>Поверхность</param>
 		/// <param name="mat">Material<para/>Материал поверхности</param>
-		public abstract void SetupSurface(Model.SubMesh.Surface surf, Model.Material mat, ModelFile.Geometry geom);
+		public abstract void SetupSurface(Model.SubMesh.Surface surf, Model.Material mat, ModelFile.Geometry geom, Model.SubMesh subMesh);
 
 		/// <summary>
 		/// Mesh must be queued for alphasorting<para/>

@@ -156,7 +156,7 @@ namespace OpenVice.Physics {
 						PhysicsManager.World.Add(e.Mesh);
 					}else{
 						PhysicsManager.World.Add(e.Body);
-						e.Body.IsAffectedByGravity = false;
+						e.Body.Gravity = BEPUutilities.Vector3.Zero;
 						e.Body.Position = new BEPUutilities.Vector3(
 							e.Position.X, e.Position.Y, e.Position.Z	
 						);

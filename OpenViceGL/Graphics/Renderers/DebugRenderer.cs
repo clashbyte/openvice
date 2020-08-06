@@ -46,7 +46,7 @@ namespace OpenVice.Graphics.Renderers {
 		/// Disable surface processing<para/>
 		/// Отключение обработки поверхностей
 		/// </summary>
-		public override void SetupSurface(Model.SubMesh.Surface surf, Model.Material mat, Files.ModelFile.Geometry geom) {
+		public override void SetupSurface(Model.SubMesh.Surface surf, Model.Material mat, Files.ModelFile.Geometry geom, Model.SubMesh subMesh) {
 			throw new NotImplementedException();
 		}
 

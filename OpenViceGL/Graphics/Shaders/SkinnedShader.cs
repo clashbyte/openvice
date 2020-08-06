@@ -37,10 +37,16 @@ namespace OpenVice.Graphics.Shaders {
 		/// Поиск ассоциированных униформов
 		/// </summary>
 		protected override void SeekUniforms() {
+
+			BoneIndexAttrib = GL.GetAttribLocation(glprog, "boneIndex");
+			BoneWeightAttrib = GL.GetAttribLocation(glprog, "boneWeight");
+
 			GL.UseProgram(glprog);
 			ProjectionMatrix = GL.GetUniformLocation(glprog, "projMatrix");
 			ModelViewMatrix = GL.GetUniformLocation(glprog, "modelMatrix");
 			ObjectMatrix = GL.GetUniformLocation(glprog, "objectMatrix");
+			BoneMatrices = GL.GetUniformLocation(glprog, "bones");
+
 			//TopColor = GL.GetUniformLocation(glprog, "topColor");
 			//BottomColor = GL.GetUniformLocation(glprog, "bottomColor");
 			GL.Uniform1(GL.GetUniformLocation(glprog, "texture"), 0);
@@ -94,6 +100,22 @@ namespace OpenVice.Graphics.Shaders {
 		public static int BottomColor { get; set; }
 
 		/// <summary>
+		/// Bones location<para/>
+		/// Костные матрицы
+		/// </summary>
+		public static int BoneMatrices { get; private set; }
+
+		/// <summary>
+		/// Bone weight attrib
+		/// </summary>
+		public static int BoneWeightAttrib { get; private set; }
+
+		/// <summary>
+		/// Bone index attrib
+		/// </summary>
+		public static int BoneIndexAttrib { get; private set; }
+
+		/// <summary>
 		/// Vertex program for this shader<para/>
 		/// Вершинная программа для этого шейдера
 		/// </summary>
@@ -104,18 +126,33 @@ namespace OpenVice.Graphics.Shaders {
 			uniform mat4 modelMatrix;
 			uniform mat4 objectMatrix;
 			uniform mat4 bones[64];
+
+			attribute vec4 boneIndex; 
+			attribute vec4 boneWeight; 
 			
 			// Texture coords
 			// Текстурные координаты
 			varying vec2 texCoords;
+
+			varying vec3 boneW;
 			
 			// Processing vertex
 			// Обработка вершины
 			void main() {
 				texCoords = gl_MultiTexCoord0.xy;
+				vec4 vpos = gl_Vertex;//;vec4(gl_Vertex.x, -gl_Vertex.z, -gl_Vertex.y, 1);
+				boneW = vec3(boneIndex.x, boneIndex.y, 0);
+				
+				/*vpos = 
+					(vpos * bones[int(boneIndex.x)]) * boneWeight.x +
+					(vpos * bones[int(boneIndex.y)]) * boneWeight.y +
+					(vpos * bones[int(boneIndex.z)]) * boneWeight.z +
+					(vpos * bones[int(boneIndex.w)]) * boneWeight.w;*/
+				vpos = vpos * bones[int(boneIndex.x)];
+
 				mat4 completeMat = projMatrix * modelMatrix * objectMatrix;
 				
-				gl_Position = completeMat * gl_Vertex;
+				gl_Position = completeMat * vpos;
 			}
 		";
 
@@ -128,6 +165,8 @@ namespace OpenVice.Graphics.Shaders {
 			// Список юниформов
 			uniform sampler2D texture;
 			
+			varying vec3 boneW;
+
 			// Texture coords
 			// Текстурные координаты
 			varying vec2 texCoords;

@@ -7,6 +7,8 @@ using System.Text;
 using OpenTK;
 using OpenVice.Files;
 using OpenVice.Graphics;
+using System.IO.Pipes;
+using System.Runtime.InteropServices;
 
 namespace OpenVice.Dev {
 
@@ -23,6 +25,11 @@ namespace OpenVice.Dev {
 		static Graphics.TextureDictionary manTex;
 		static Graphics.Renderers.SkinnedRenderer re;
 
+		static AnimationFile.Animation animation;
+
+		static List<Graphics.Renderers.DebugRenderer.Line> lines;
+
+		static float time = 0;
 
 		/// <summary>
 		/// Initialize debug data<para/>
@@ -38,16 +45,18 @@ namespace OpenVice.Dev {
 			box.Size = Vector3.One * 0.5f;
 			//rend.Primitives.Add(box);
 
+
 			AnimationFile fg = new AnimationFile(PathManager.GetAbsolute("anim/ped.ifp"));
+			animation = fg["abseil"];
 
 
-			man = new Model(new ModelFile(ArchiveManager.Get("cop.dff"), true), true, true);
-			manTex = new TextureDictionary(new TextureFile(ArchiveManager.Get("cop.txd"), true), true, true);
-			
+			man = new Model(new ModelFile(ArchiveManager.Get("HMOCA.dff"), true), true, true);
+			manTex = new TextureDictionary(new TextureFile(ArchiveManager.Get("HMOCA.txd"), true), true, true);
 
+			ApplyAnimationFrame(man.Children, animation, 2);
 
 			re = new Graphics.Renderers.SkinnedRenderer();
-			RenderBonesRecursively(man.Children);
+			lines = new List<Graphics.Renderers.DebugRenderer.Line>();
 		}
 
 		/// <summary>
@@ -72,6 +81,11 @@ namespace OpenVice.Dev {
 				Angles = PhysicsManager.rot
 			};
 
+			ApplyAnimationFrame(man.Children, animation, time);
+			time += 0.016f;
+			time = time % animation.Length;
+			
+
 			box.Matrix = t.Matrix;
 		}
 
@@ -80,6 +94,13 @@ namespace OpenVice.Dev {
 		/// Отрисовка дебаг-данных
 		/// </summary>
 		public static void Render() {
+			foreach (Graphics.Renderers.DebugRenderer.Line line in lines) {
+				rend.Primitives.Remove(line);
+			}
+			lines.Clear();
+			RenderBonesRecursively(man.Children);
+
+
 			Graphics.Renderer.RenderQueue.Enqueue(re);
 			Graphics.Renderer.RenderQueue.Enqueue(rend);
 		}
@@ -88,12 +109,14 @@ namespace OpenVice.Dev {
 		static void RenderBonesRecursively(Model.Branch[] branches) {
 			foreach (Model.Branch b in branches) {
 				if (b.Parent!=null) {
-					rend.Primitives.Add(new Graphics.Renderers.DebugRenderer.Line() { 
+					Graphics.Renderers.DebugRenderer.Line line = new Graphics.Renderers.DebugRenderer.Line() {
 						Start = b.Matrix.ExtractTranslation() * 10f,
 						End = b.Parent.Matrix.ExtractTranslation() * 10f,
 						Color = new Vector3(1f, 1f, 0f),
 						LineSize = 3f
-					});
+					};
+					lines.Add(line);
+					rend.Primitives.Add(line);
 				}
 				if (b.SubMeshes.Length > 0) {
 					re.SubMesh = b.SubMeshes[0];
@@ -105,6 +128,105 @@ namespace OpenVice.Dev {
 					RenderBonesRecursively(b.Children);
 				}
 			}
+		}
+
+		static void ApplyAnimationFrame(Model.Branch[] branches, AnimationFile.Animation animation, float time = 0) {
+			foreach (Model.Branch b in branches) {
+				AnimationFile.Bone boneDef = animation[b.Name];
+				if (boneDef != null) {
+
+					
+					
+					Vector3 transition = Vector3.Zero;
+					Quaternion rotation = b.OriginalAngles;
+					float scale = b.OriginalScale;
+					AnimationFile.Frame frameFrom, frameTo;
+					float delta = 0;
+
+					frameFrom = SeekFrameReverse(boneDef, time, 0);
+					frameTo = SeekFrame(boneDef, time, 0);
+					if (frameFrom != null && frameTo != null) {
+						delta = (time - frameFrom.Delay) / (frameTo.Delay - frameFrom.Delay);
+						rotation = Quaternion.Slerp(frameFrom.Rotation, frameTo.Rotation, delta);//Vector3.Lerp(frameFrom.Transition, frameTo.Transition, delta);
+					}
+
+					frameFrom = SeekFrameReverse(boneDef, time, 1);
+					frameTo = SeekFrame(boneDef, time, 1);
+					if (frameFrom != null && frameTo != null) {
+						delta = (time - frameFrom.Delay) / (frameTo.Delay - frameFrom.Delay);
+						transition = Vector3.Lerp(frameFrom.Transition, frameTo.Transition, delta);
+						if (b.Name == "Root") {
+							//transition.X = 0;
+							transition.Z = 0;
+						}
+					}
+
+
+					b.Position = b.OriginalPosition + transition;
+					b.Angles = rotation;
+					b.Scale = scale;
+
+				}
+				if (b.Children != null) {
+					ApplyAnimationFrame(b.Children, animation, time);
+				}
+			}
+		}
+
+		static AnimationFile.Frame SeekFrame(AnimationFile.Bone bone, float time, int mode = 0) {
+			foreach (AnimationFile.Frame frame in bone.Frames) {
+				if (frame.Delay > time) {
+					bool ok = false;
+					switch (mode) {
+
+						case 1:
+							ok = frame.HasTransition;
+							break;
+
+						case 2:
+							ok = frame.HasScale;
+							break;
+
+
+						default:
+							ok = true;
+							break;
+					}
+					if (ok) {
+						return frame;
+					}
+				}
+			}
+			return null;
+		}
+
+		static AnimationFile.Frame SeekFrameReverse(AnimationFile.Bone bone, float time, int mode = 0) {
+			AnimationFile.Frame[] frames = (AnimationFile.Frame[])bone.Frames.Clone();
+			Array.Reverse(frames);
+			foreach (AnimationFile.Frame frame in frames) {
+				if (frame.Delay <= time) {
+					bool ok = false;
+					switch (mode) {
+
+						case 1:
+							ok = frame.HasTransition;
+							break;
+
+						case 2:
+							ok = frame.HasScale;
+							break;
+
+
+						default:
+							ok = true;
+							break;
+					}
+					if (ok) {
+						return frame;
+					}
+				}
+			}
+			return null;
 		}
 
 	}
