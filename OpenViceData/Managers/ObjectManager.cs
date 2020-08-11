@@ -106,14 +106,17 @@ namespace OpenVice.Managers {
 						// Object installation
 						// Расстановка объектов
 						case "inst":
-							ItemPlacement g = new ItemPlacement() {
-								ID			= p.Text[0].ToInt(),
-								ModelName	= p.Text[1],
-								InteriorID	= ItemPlacement.Interior.World,
-								Position	= new Vector3(p.Text[p.Text.Length - 10].ToFloat(), p.Text[p.Text.Length - 8].ToFloat(), p.Text[p.Text.Length - 9].ToFloat()),
-								Scale		= new Vector3(p.Text[p.Text.Length - 7].ToFloat(), p.Text[p.Text.Length - 5].ToFloat(), p.Text[p.Text.Length - 6].ToFloat()),
-								Angle		= new Quaternion(-p.Text[p.Text.Length - 4].ToFloat(), -p.Text[p.Text.Length - 2].ToFloat(), -p.Text[p.Text.Length - 3].ToFloat(), -p.Text[p.Text.Length - 1].ToFloat()),
-							};
+                            ItemPlacement g = new ItemPlacement();
+
+                            g = new ItemPlacement()
+                            {
+                                ID = p.Text[0].ToInt(),
+                                ModelName = p.Text[1],
+                                InteriorID = ItemPlacement.Interior.World,
+                                Position = new Vector3(p.Text[p.Text.Length - 10].ToFloat(), p.Text[p.Text.Length - 8].ToFloat(), p.Text[p.Text.Length - 9].ToFloat()),
+                                Scale = new Vector3(p.Text[p.Text.Length - 7].ToFloat(), p.Text[p.Text.Length - 5].ToFloat(), p.Text[p.Text.Length - 6].ToFloat()),
+                                Angle = new Quaternion(-p.Text[p.Text.Length - 4].ToFloat(), -p.Text[p.Text.Length - 2].ToFloat(), -p.Text[p.Text.Length - 3].ToFloat(), -p.Text[p.Text.Length - 1].ToFloat()),
+                            };
 							if (p.Text.Length>12) {
 								g.InteriorID = (ItemPlacement.Interior)p.Text[2].ToInt();
 							}

@@ -32,7 +32,7 @@ namespace OpenVice.Files {
 		/// Разбор конфигов
 		/// </summary>
 		/// <param name="path">File path<para/>Путь к файлу</param>
-		/// <param name="sections">Use sectionded parser<para/>Использовать секционный разбор</param>
+		/// <param name="sections">Use sectioned parser<para/>Использовать секционный разбор</param>
 		/// <param name="commas">Lines separated by commas instead of spaces<para/>Параметры разделены запятыми вместо пробелов</param>
 		public TextFile(string path, bool sections=false, bool commas=false) {
 
@@ -48,6 +48,7 @@ namespace OpenVice.Files {
 			}
 			string section = "";
 			StreamReader f = new StreamReader(new FileStream(path, FileMode.Open, FileAccess.Read));
+            Dev.Console.Log("Loaded file: " + path);
 			List<Line> lines = new List<Line>();
 			while (!f.EndOfStream) {
 
@@ -59,8 +60,16 @@ namespace OpenVice.Files {
 				}
 				if (l.Contains("//")) {
 					l = l.Substring(0, l.IndexOf("//"));
-				}
-				l = l.Replace("\t", " ");
+                }
+                //HACK for ViceCry mod that does not conform to the format.
+                //This parser should be more robust.
+                /*if (l.Contains(",	0"))
+                    l = l.Replace(",	0", ",	0,");
+                if (l.Contains("1	1	1"))
+                    l = l.Replace("1	1	1", "1,	1,	1,");*/
+                //ENDHACK
+
+                l = l.Replace("\t", " ");
 				while (l.Contains("  ")) {
 					l = l.Replace("  ", " ");
 				}
@@ -74,9 +83,11 @@ namespace OpenVice.Files {
 					// Проверка на разделенную запятой линию
 					if (CommaSeparated) {
 						p = l.Split(',');
-						for (int i = 0; i < p.Length; i++) {
-							p[i] = p[i].Trim();
-						}
+
+                        for (int i = 0; i < p.Length; i++)
+                        {
+                            p[i] = p[i].Trim();
+                        }
 					}else{
 						p = l.Split(' ');
 					}

@@ -48,6 +48,13 @@ namespace OpenVice.Managers {
 		/// </summary>
 		public static string[] ArchiveFiles;
 
+        /// <summary>
+        /// Definition of all script SCM files<para/>
+        /// Все объясвления SCM-файлов
+        /// </summary>
+        public static SCMFile MainScript; //I believe there is only one SCM - main.scm...?
+
+
 		/// <summary>
 		/// Main data initialization<para/>
 		/// Инициализация основных данных
@@ -65,6 +72,8 @@ namespace OpenVice.Managers {
 		/// </summary>
 		static void ReadDataFiles() {
 			List<string> ide = new List<string>(), ipl = new List<string>(), col = new List<string>(), tex = new List<string>(), mod = new List<string>(), img = new List<string>();
+
+            MainScript = new SCMFile(PathManager.GetAbsolute("data/main.scm"));
 
 			TextFile d;
 			for (int i = 0; i < 2; i++) {
