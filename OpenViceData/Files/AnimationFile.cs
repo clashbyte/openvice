@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using System;
 using System.IO;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace OpenVice.Files {
@@ -36,6 +38,20 @@ namespace OpenVice.Files {
 		/// <param name="data">File contents<para/>Содержимое файла</param>
 		public AnimationFile(byte[] data) {
 			ReadData(new MemoryStream(data));
+		}
+
+		
+		public Animation this[string name] {
+			get {
+				if (Animations != null) {
+					foreach (Animation anim in Animations) {
+						if (anim.Name.ToLower() == name.ToLower()) {
+							return anim;
+						}
+					}
+				}
+				return null;
+			}
 		}
 
 		/// <summary>
@@ -95,6 +111,9 @@ namespace OpenVice.Files {
 			a.Bones = new Bone[objectCount];
 			for (int i = 0; i < objectCount; i++) {
 				a.Bones[i] = ReadBone(f);
+				foreach (Frame frame in a.Bones[i].Frames) {
+					a.Length = Math.Max(frame.Delay, a.Length);
+				}
 			}
 
 			return a;
@@ -129,7 +148,6 @@ namespace OpenVice.Files {
 			b.PrevSibling = f.ReadInt32();
 
 			b.Frames = ReadFrames(f, b.FrameСount);
-
 			return b;
 		}
 
@@ -260,6 +278,27 @@ namespace OpenVice.Files {
 			/// Кости анимации
 			/// </summary>
 			public Bone[] Bones;
+
+			/// <summary>
+			/// Animation length
+			/// </summary>
+			public float Length;
+
+			/// <summary>
+			/// Get animation frames by bone name
+			/// </summary>
+			/// <param name="name">Name</param>
+			/// <returns>Bone definition or null</returns>
+			public Bone this[string name] {
+				get {
+					foreach (Bone bone in Bones) {
+						if (bone.Name.ToLower() == name.ToLower()) {
+							return bone;
+						}
+					}
+					return null;
+				}
+			}
 		}
 
 		/// <summary>
@@ -344,6 +383,7 @@ namespace OpenVice.Files {
 			/// Данные об изменении размера
 			/// </summary>
 			public Vector3 Scale;
+
 		}
 
 		/// <summary>

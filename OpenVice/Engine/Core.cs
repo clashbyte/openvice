@@ -30,7 +30,7 @@ namespace OpenVice.Engine {
 
 			// Setting game path
 			// Установка пути игры
-			PathManager.GamePath = "D:/Games/GTA Vice City/";
+			PathManager.GamePath = "D:/Games/Vice City/";
 
 			// Reading GTA_VC.DAT
 			// Чтение основных данных

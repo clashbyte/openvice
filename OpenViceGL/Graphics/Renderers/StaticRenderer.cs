@@ -78,7 +78,7 @@ namespace OpenVice.Graphics.Renderers {
 		/// </summary>
 		/// <param name="surf">Surface<para/>Поверхность</param>
 		/// <param name="mat">Material<para/>Материал поверхности</param>
-		public override void SetupSurface(Model.SubMesh.Surface surf, Model.Material mat, ModelFile.Geometry geom) {
+		public override void SetupSurface(Model.SubMesh.Surface surf, Model.Material mat, ModelFile.Geometry geom, Model.SubMesh subMesh) {
 			GL.Uniform1(StaticShader.AppearValue, Fading ? FadingDelta : 1f);
 			GL.Uniform3(StaticShader.AmbientColor, Renderer.SkyState.AmbientStatic);
 			GL.Uniform3(StaticShader.DiffuseColor, Renderer.SkyState.DirectLight);
