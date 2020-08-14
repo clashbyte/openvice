@@ -21,7 +21,7 @@ namespace OpenVice.Classes {
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-			GameForm w = new GameForm(1024, 600, false);
+			GameForm w = new GameForm(1280, 720, false);
 			w.Run(60.0, 60.0);
 			
 		}

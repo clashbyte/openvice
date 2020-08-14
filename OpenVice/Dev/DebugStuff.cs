@@ -47,7 +47,7 @@ namespace OpenVice.Dev {
 
 
 			AnimationFile fg = new AnimationFile(PathManager.GetAbsolute("anim/ped.ifp"));
-			animation = fg["abseil"];
+			animation = fg["ATM"];
 
 
 			man = new Model(new ModelFile(ArchiveManager.Get("HMOCA.dff"), true), true, true);
@@ -82,7 +82,7 @@ namespace OpenVice.Dev {
 			};
 
 			ApplyAnimationFrame(man.Children, animation, time);
-			time += 0.016f;
+			time += 0.0016f;
 			time = time % animation.Length;
 			
 

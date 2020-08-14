@@ -102,8 +102,9 @@ namespace OpenVice.Graphics.Renderers {
 		/// <param name="branches">Bones</param>
 		/// <param name="matrices">Matrices</param>
 		void BuildMatrices(Model.Branch[] branches, ref Matrix4[] matrices) {
+			Matrix4 rot = meshMatrix;
 			foreach (Model.Branch branch in branches) {
-				matrices[branch.OriginalIndex] =  branch.Matrix * branch.OriginalInvMatrix;
+				matrices[branch.OriginalIndex] = rot.Inverted() * branch.OriginalInvMatrix * branch.Matrix;// branch.Matrix * branch.OriginalInvMatrix;
 				if (branch.Children != null) {
 					BuildMatrices(branch.Children, ref matrices);
 				}
