@@ -133,23 +133,18 @@ namespace OpenVice.Graphics.Shaders {
 			// Texture coords
 			// Текстурные координаты
 			varying vec2 texCoords;
-
-			varying vec3 boneW;
 			
 			// Processing vertex
 			// Обработка вершины
 			void main() {
 				texCoords = gl_MultiTexCoord0.xy;
-				vec4 vpos = gl_Vertex;//;vec4(gl_Vertex.x, -gl_Vertex.z, -gl_Vertex.y, 1);
-				boneW = vec3(boneIndex.x, boneIndex.y, 0);
 				
-				/*vpos = 
-					(vpos * bones[int(boneIndex.x)]) * boneWeight.x +
-					(vpos * bones[int(boneIndex.y)]) * boneWeight.y +
-					(vpos * bones[int(boneIndex.z)]) * boneWeight.z +
-					(vpos * bones[int(boneIndex.w)]) * boneWeight.w;*/
-				vpos = vpos * bones[int(boneIndex.x)];
+				mat4 skinning = bones[int(boneIndex.x)] * boneWeight.x;
+				skinning += bones[int(boneIndex.y)] * boneWeight.y;
+				skinning += bones[int(boneIndex.z)] * boneWeight.z;
+				skinning += bones[int(boneIndex.w)] * boneWeight.w;
 
+				vec4 vpos = skinning * vec4(gl_Vertex.xyz, 1.0);
 				mat4 completeMat = projMatrix * modelMatrix * objectMatrix;
 				
 				gl_Position = completeMat * vpos;
@@ -164,8 +159,6 @@ namespace OpenVice.Graphics.Shaders {
 			// Basic uniforms list
 			// Список юниформов
 			uniform sampler2D texture;
-			
-			varying vec3 boneW;
 
 			// Texture coords
 			// Текстурные координаты

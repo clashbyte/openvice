@@ -173,6 +173,7 @@ namespace OpenVice.Files {
 
 			// Reading extension
 			// Чтение расширения
+			Dictionary<int, int> frameRootLookup = new Dictionary<int, int>();
 			for (int i = 0; i < numFrames; i++) {
 				ChunkHeader h = ReadHeader(f);
 				if (h.Type != ChunkType.Extension) {
@@ -189,11 +190,37 @@ namespace OpenVice.Files {
 							case ChunkType.Frame:
 								Frames[i].Name = f.ReadVCString((int)h.Size);
 								break;
+
+							case ChunkType.HAnim:
+								f.BaseStream.Position += 4;
+								int boneID = f.ReadInt32();
+								if (Frames[i].BoneID == -1) {
+									Frames[i].BoneID = boneID;
+								}
+								int boneCount = f.ReadInt32();
+								if (boneCount > 0) {
+									f.BaseStream.Position += 8;
+								}
+
+								for (int bc = 0; bc < boneCount; bc++) {
+									int childBoneID = f.ReadInt32();
+									int childIndex = f.ReadInt32();
+									f.BaseStream.Position += 4;
+									frameRootLookup.Add(childBoneID, childIndex);
+								}
+								
+								break;
+
 							default:
 								f.BaseStream.Position += h.Size;
 								break;
 						}
 					}
+				}
+			}
+			for (int i = 0; i < Frames.Length; i++) {
+				if (Frames[i].BoneID != -1 && frameRootLookup.ContainsKey(Frames[i].BoneID)) {
+					Frames[i].BoneID = frameRootLookup[Frames[i].BoneID];
 				}
 			}
 		}
@@ -393,8 +420,7 @@ namespace OpenVice.Files {
 								// Количество костей на одну вершинуы
 								g.MaxBonesPerVertex = f.ReadByte();
 								f.BaseStream.Position += 1;
-
-								if (usedBones>0) {
+								if (usedBones > 0) {
 									f.BaseStream.Position += usedBones;
 								}
 
@@ -416,7 +442,7 @@ namespace OpenVice.Files {
 
 								// Skipping zeroes
 								// Пропуск нескольких нулей
-								if (usedBones>0) {
+								if (usedBones > 0) {
 									f.BaseStream.Position += 12;
 								}
 
@@ -621,6 +647,11 @@ namespace OpenVice.Files {
 			/// Индекс родителя
 			/// </summary>
 			public int Parent = -1;
+
+			/// <summary>
+			/// Assigned bone ID
+			/// </summary>
+			public int BoneID = -1;
 		}
 
 		/// <summary>

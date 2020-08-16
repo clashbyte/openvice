@@ -6,6 +6,7 @@ using OpenVice.Files;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using OpenVice.Graphics.Renderers;
+using System.ComponentModel;
 
 namespace OpenVice.Graphics {
 
@@ -263,9 +264,17 @@ namespace OpenVice.Graphics {
 			}
 
 			/// <summary>
-			/// Original bone index in file
+			/// Original frame index in file
 			/// </summary>
 			public int OriginalIndex {
+				get; private set;
+			}
+
+			/// <summary>
+			/// Original bone ID
+			/// </summary>
+			[DefaultValue(-1)]
+			public int OriginalBoneID {
 				get; private set;
 			}
 
@@ -367,9 +376,13 @@ namespace OpenVice.Graphics {
 				Name = f.Name;
 				
 				OriginalIndex = branchIndex;
+				OriginalBoneID = f.BoneID;
 				OriginalPosition = Position;
 				OriginalScale = Scale;
 				OriginalAngles = Angles;
+				if (OriginalBoneID == -1) {
+					OriginalBoneID = branchIndex;
+				}
 				
 				// Hack to rebuild matrix
 				// Хак для перестройки матрицы
@@ -721,11 +734,13 @@ namespace OpenVice.Graphics {
 					boneBuffer = GL.GenBuffer();
 					GL.BindBuffer(BufferTarget.ArrayBuffer, boneBuffer);
 					GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(boneData.Length * sizeof(byte)), boneData, BufferUsageHint.StaticDraw);
+					boneData = null;
 				}
 				if (boneWeightData != null) {
 					boneWeightBuffer = GL.GenBuffer();
 					GL.BindBuffer(BufferTarget.ArrayBuffer, boneWeightBuffer);
 					GL.BufferData(BufferTarget.ArrayBuffer, new IntPtr(boneWeightData.Length * sizeof(float)), boneWeightData, BufferUsageHint.StaticDraw);
+					boneWeightData = null;
 				}
 
 				// Sending indices
