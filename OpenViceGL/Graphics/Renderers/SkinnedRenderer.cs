@@ -29,7 +29,14 @@ namespace OpenVice.Graphics.Renderers {
 			// Recalculating bones
 			// Пересчитываем кости
 			Matrix4[] bones = new Matrix4[64];
+			for (int i = 0; i < bones.Length; i++) {
+				bones[i] = Matrix4.Identity;
+			}
+
+			//System.Diagnostics.Debug.WriteLine(">>>>>>>>>>>>>>> ANIM");
+			//System.Diagnostics.Debug.WriteLine(">>> " + f.Name + " => " + f.BoneID);
 			BuildMatrices(SubMesh.ParentModel.Children, ref bones);
+
 
 
 			// Prepare shader
@@ -61,6 +68,7 @@ namespace OpenVice.Graphics.Renderers {
 				matrixData[i * 16 + 15] = bones[i][3, 3];
 			}
 			GL.UniformMatrix4(SkinnedShader.BoneMatrices, 64, false, matrixData);
+			//System.Diagnostics.Debugger.Break();
 
 			// Rendering surfaces
 			// Отрисовка поверхностей
@@ -79,12 +87,12 @@ namespace OpenVice.Graphics.Renderers {
 			//GL.Uniform3(StaticShader.DiffuseColor, Renderer.SkyState.DirectLight);
 			//GL.Uniform4(StaticShader.TintColor, new Color4(mat.Color[0], mat.Color[1], mat.Color[2], mat.Color[3]));
 
+			GL.EnableVertexAttribArray(SkinnedShader.BoneIndexAttrib);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, subMesh.BoneIndexBuffer);
 			GL.VertexAttribPointer(SkinnedShader.BoneIndexAttrib, 4, VertexAttribPointerType.Byte, false, 0, IntPtr.Zero);
-			GL.EnableVertexAttribArray(SkinnedShader.BoneIndexAttrib);
+			GL.EnableVertexAttribArray(SkinnedShader.BoneWeightAttrib);
 			GL.BindBuffer(BufferTarget.ArrayBuffer, subMesh.BoneWeightBuffer);
 			GL.VertexAttribPointer(SkinnedShader.BoneWeightAttrib, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
-			GL.EnableVertexAttribArray(SkinnedShader.BoneWeightAttrib);
 		}
 
 		/// <summary>
@@ -102,8 +110,12 @@ namespace OpenVice.Graphics.Renderers {
 		/// <param name="branches">Bones</param>
 		/// <param name="matrices">Matrices</param>
 		void BuildMatrices(Model.Branch[] branches, ref Matrix4[] matrices) {
+			Matrix4 rot = meshMatrix.Inverted();
 			foreach (Model.Branch branch in branches) {
-				matrices[branch.OriginalIndex] =  branch.Matrix * branch.OriginalInvMatrix;
+				if (branch.OriginalBoneID != -1 && branch.OriginalBoneID < 64) {
+					//System.Diagnostics.Debug.WriteLine(branch.OriginalBoneID);
+					matrices[branch.OriginalBoneID] = branch.OriginalInvMatrix * branch.Matrix * rot;// branch.Matrix * branch.OriginalInvMatrix;
+				}
 				if (branch.Children != null) {
 					BuildMatrices(branch.Children, ref matrices);
 				}

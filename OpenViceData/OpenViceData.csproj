@@ -62,6 +62,7 @@
     <Compile Include="Data\ItemPlacement.cs" />
     <Compile Include="Dev\Console.cs" />
     <Compile Include="Files\CollisionFile.cs" />
+    <Compile Include="Files\SCMFile.cs" />
     <Compile Include="Physics\StaticCollider.cs" />
     <Compile Include="Files\AdfStream.cs" />
     <Compile Include="Files\AnimationFile.cs" />

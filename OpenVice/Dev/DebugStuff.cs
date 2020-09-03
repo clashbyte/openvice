@@ -9,6 +9,8 @@ using OpenVice.Files;
 using OpenVice.Graphics;
 using System.IO.Pipes;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+using OpenVice.Entities;
 
 namespace OpenVice.Dev {
 
@@ -37,7 +39,7 @@ namespace OpenVice.Dev {
 		/// </summary>
 		public static void Init() {
 
-			//Entities.Camera.Position = new OpenTK.Vector3(-1647.534f, 26.54692f, -667.5128f);
+			//Entities.Camera.Position = new OpenTK.Vector3(375.604f, 58.78056f, -585.3889f);
 
 			rend = new Graphics.Renderers.DebugRenderer();
 			box = new Graphics.Renderers.DebugRenderer.Box();
@@ -47,11 +49,13 @@ namespace OpenVice.Dev {
 
 
 			AnimationFile fg = new AnimationFile(PathManager.GetAbsolute("anim/ped.ifp"));
-			animation = fg["abseil"];
+			animation = fg["WALK_player"];
 
 
-			man = new Model(new ModelFile(ArchiveManager.Get("HMOCA.dff"), true), true, true);
-			manTex = new TextureDictionary(new TextureFile(ArchiveManager.Get("HMOCA.txd"), true), true, true);
+			man = new Model(new ModelFile(ArchiveManager.Get("HFYST.dff"), true), true, true);
+			manTex = new TextureDictionary(new TextureFile(ArchiveManager.Get("HFYST.txd"), true), true, true);
+			
+			
 
 			ApplyAnimationFrame(man.Children, animation, 2);
 
@@ -84,7 +88,11 @@ namespace OpenVice.Dev {
 			ApplyAnimationFrame(man.Children, animation, time);
 			time += 0.016f;
 			time = time % animation.Length;
-			
+
+			if (Input.KeyPress(Key.P)) {
+				Debug.WriteLine(Camera.Position);
+			}
+
 
 			box.Matrix = t.Matrix;
 		}
@@ -133,39 +141,38 @@ namespace OpenVice.Dev {
 		static void ApplyAnimationFrame(Model.Branch[] branches, AnimationFile.Animation animation, float time = 0) {
 			foreach (Model.Branch b in branches) {
 				AnimationFile.Bone boneDef = animation[b.Name];
-				if (boneDef != null) {
+				if (b.Parent != null) {
+					if (boneDef != null) {
 
-					
-					
-					Vector3 transition = Vector3.Zero;
-					Quaternion rotation = b.OriginalAngles;
-					float scale = b.OriginalScale;
-					AnimationFile.Frame frameFrom, frameTo;
-					float delta = 0;
+						Vector3 transition = Vector3.Zero;
+						Quaternion rotation = b.OriginalAngles;
+						float scale = b.OriginalScale;
+						AnimationFile.Frame frameFrom, frameTo;
+						float delta = 0;
 
-					frameFrom = SeekFrameReverse(boneDef, time, 0);
-					frameTo = SeekFrame(boneDef, time, 0);
-					if (frameFrom != null && frameTo != null) {
-						delta = (time - frameFrom.Delay) / (frameTo.Delay - frameFrom.Delay);
-						rotation = Quaternion.Slerp(frameFrom.Rotation, frameTo.Rotation, delta);//Vector3.Lerp(frameFrom.Transition, frameTo.Transition, delta);
-					}
+						frameFrom = SeekFrameReverse(boneDef, time, 0);
+						frameTo = SeekFrame(boneDef, time, 0);
+						if (frameFrom != null && frameTo != null) {
+							delta = (time - frameFrom.Delay) / (frameTo.Delay - frameFrom.Delay);
+							rotation = Quaternion.Slerp(frameFrom.Rotation, frameTo.Rotation, delta);//Vector3.Lerp(frameFrom.Transition, frameTo.Transition, delta);
+						}
 
-					frameFrom = SeekFrameReverse(boneDef, time, 1);
-					frameTo = SeekFrame(boneDef, time, 1);
-					if (frameFrom != null && frameTo != null) {
-						delta = (time - frameFrom.Delay) / (frameTo.Delay - frameFrom.Delay);
-						transition = Vector3.Lerp(frameFrom.Transition, frameTo.Transition, delta);
+						frameFrom = SeekFrameReverse(boneDef, time, 1);
+						frameTo = SeekFrame(boneDef, time, 1);
+						if (frameFrom != null && frameTo != null) {
+							delta = (time - frameFrom.Delay) / (frameTo.Delay - frameFrom.Delay);
+							transition = Vector3.Lerp(frameFrom.Transition, frameTo.Transition, delta);
+						}
 						if (b.Name == "Root") {
-							//transition.X = 0;
 							transition.Z = 0;
 						}
+
+
+						b.Position = b.OriginalPosition + transition;
+						b.Angles = rotation;
+						b.Scale = scale;
+
 					}
-
-
-					b.Position = b.OriginalPosition + transition;
-					b.Angles = rotation;
-					b.Scale = scale;
-
 				}
 				if (b.Children != null) {
 					ApplyAnimationFrame(b.Children, animation, time);
