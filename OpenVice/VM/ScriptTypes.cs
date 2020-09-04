@@ -57,7 +57,7 @@ namespace OpenVice.VM
     /// <summary>
     /// Enum of opcode argument types
     /// </summary>
-    enum SCMType
+    public enum SCMType
     {
         EndOfArgList = 0x00,
         TInt32 = 0x01,
@@ -87,6 +87,17 @@ namespace OpenVice.VM
     [StructLayout(LayoutKind.Explicit)]
     public struct SCMOpcodeParameter : IEnumerable<SCMType>
     {
+        public SCMOpcodeParameter(SCMType Type)
+        {
+            type = Type;
+            Integer = 0;
+            Real = 0;
+            Str = "";
+            GlobalInteger = 0;
+            GlobalReal = 0;
+            GlobalPtr = new IntPtr();
+        }
+
         [FieldOffset(0)]
         SCMType type;
 

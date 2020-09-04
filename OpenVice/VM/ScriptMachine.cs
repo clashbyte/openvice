@@ -76,6 +76,9 @@ namespace OpenVice.VM
         }
     }
 
+    /// <summary>
+    /// The thread that the script code runs on.
+    /// </summary>
     public class SCMThread
     {
         public string Name; //17 chars
@@ -243,9 +246,9 @@ namespace OpenVice.VM
                         PC += sizeof(byte);
                     }
 
-                    //TODO
+                    //TODO: Is this correct?
                     //Parameters.push_back(SCMOpcodeParameter{ type, { 0} });
-                    Parameters.Add(new SCMOpcodeParameter { type, { 0 } });
+                    Parameters.Add(new SCMOpcodeParameter(type));
 
                     switch (type)
                     {
@@ -278,7 +281,7 @@ namespace OpenVice.VM
                                 {
                                     SCMOpcodeParameter Param = Parameters.LastOrDefault();
                                     //TODO: This was originally GlobalData.data() + v...
-                                    Param.GlobalPtr = (IntPtr)globalData.ToArray().Length + v;  //* SCM_VARIABLE_SIZE;
+                                    Param.GlobalPtr = (IntPtr)globalData.ToArray().Length + v * SCM_VARIABLE_SIZE;
                                     Parameters[Parameters.Count - 1] = Param;
                                 }
 
@@ -320,8 +323,16 @@ namespace OpenVice.VM
                             PC += sizeof(byte) * 4;
                             break;
                         case SCMType.TString:
-                            //TODO
-                            //std::copy(m_File.data() + PC, m_File.data() + PC + 8, Parameters.LastOrDefault().Str);
+                            lock (Parameters) //Thread safety
+                            {
+                                SCMOpcodeParameter Param = Parameters.LastOrDefault();
+                                char[] Str = Param.Str.ToArray();
+                                //Copy a string from the file data to the string.
+                                Array.Copy(file.Data.ToArray(), (int)PC, Str, 0, 8);
+                                Param.Str = new string(Str);
+                                Parameters[Parameters.Count - 1] = Param;
+                            }
+
                             PC += sizeof(byte) * 8;
                             break;
                         case SCMType.TFloat16:
@@ -337,7 +348,6 @@ namespace OpenVice.VM
                             throw new UnknownType<Exception>((char)type, PC, Thread.Name);
                     };
 
-                    //TODO
                     ScriptArguments Sca = new ScriptArguments(Parameters, Thread, this);
 
 #if RW_SCRIPT_DEBUG
@@ -361,10 +371,7 @@ namespace OpenVice.VM
                     // After debugging has been completed, update the program counter
                     Thread.ProgramCounter = PC;
 
-                    if (Code.Function != null)
-                    {
-                        Code.Function(Sca);
-                    }
+                    Code.Function?.Invoke(Sca);
 
                     if (IsNegatedConditional)
                     {
@@ -401,7 +408,7 @@ namespace OpenVice.VM
                         Thread.ConditionResult = (Thread.ConditionMask != 0);
                     }
 
-                    SCMOpcodeParameter P;
+                    SCMOpcodeParameter P = new SCMOpcodeParameter();
                     P.GlobalPtr = (IntPtr)(Thread.Locals.ToArray().Length + 16 * sizeof(char) * 4);
                     P.GlobalInteger += MSPassed;
                     P.GlobalPtr = (IntPtr)(Thread.Locals.ToArray().Length + 17 * sizeof(char) * 4);
