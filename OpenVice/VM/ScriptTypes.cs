@@ -85,11 +85,11 @@ namespace OpenVice.VM
     };
 
     [StructLayout(LayoutKind.Explicit)]
-    public struct SCMOpcodeParameter : IEnumerable<SCMType>
+    public struct SCMOpcodeParameter
     {
-        public SCMOpcodeParameter(SCMType Type)
+        public SCMOpcodeParameter(SCMType type)
         {
-            type = Type;
+            Type = type;
             Integer = 0;
             Real = 0;
             Str = "";
@@ -99,7 +99,7 @@ namespace OpenVice.VM
         }
 
         [FieldOffset(0)]
-        SCMType type;
+        public SCMType Type;
 
         [FieldOffset(1)]
         public int Integer;
@@ -116,7 +116,7 @@ namespace OpenVice.VM
 
         public int IntegerValue()
         {
-            switch (type)
+            switch (Type)
             {
                 case SCMType.TGlobal:
                 case SCMType.TLocal:
@@ -134,7 +134,7 @@ namespace OpenVice.VM
 
         public float RealValue()
         {
-            switch (type)
+            switch (Type)
             {
                 case SCMType.TGlobal:
                 case SCMType.TLocal:
@@ -150,7 +150,7 @@ namespace OpenVice.VM
 
         public bool IsLvalue()
         {
-            return type == SCMType.TLocal || type == SCMType.TGlobal;
+            return Type == SCMType.TLocal || Type == SCMType.TGlobal;
         }
 
         public int HandleValue()

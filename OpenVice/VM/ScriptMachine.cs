@@ -167,13 +167,90 @@ namespace OpenVice.VM
         private SCMFile file;
         private ScriptModule module;
         private bool debugFlag;
-        private List<SCMThread> m_ActiveThreads;
+        private List<SCMThread> activeThreads;
         //SCMByte is defined as a char in original source - might have to redefine as byte...
         private List<char> globalData;
 
+        /// <summary>
+        /// The active threads running on this ScriptMachine instance.
+        /// </summary>
+        /// <returns>A List of SCMThread instances.</returns>
+        public List<SCMThread> GetThreads()
+        {
+            return activeThreads;
+        }
+
+        /// <summary>
+        /// Initializes a new ScriptMachine instance.
+        /// TODO: Pass a GameState instance to this constructor.
+        /// </summary>
+        /// <param name="File">The SCMFile to interpret.</param>
+        /// <param name="Module">A ScriptModule instance.</param>
         public ScriptMachine(SCMFile File, ScriptModule Module)
         {
+            file = File;
+            module = Module;
+            debugFlag = false;
 
+            uint Size = file.GlobalsSize;
+            globalData = new List<char>((int)Size);
+            uint Offset = file.GlobalSection;
+
+            var GlobalDataCopy = globalData.ToArray();
+            Array.Copy(file.Data.ToArray(), (int)file.GlobalSection, GlobalDataCopy, 0, (int)file.GlobalsSize);
+            globalData = new List<char>(GlobalDataCopy);
+        }
+
+        /// <summary>
+        /// Executes all the active threads in this ScriptMachine instance.
+        /// </summary>
+        /// <param name="dt"></param>
+        public void Execute(float dt)
+        {
+            //RW_PROFILE_SCOPEC(__func__, MP_ORANGERED);
+            int MS = (int)(dt * 1000f);
+            for (var t = 0; t < activeThreads.Count; ++t)
+            {
+                var Thread = activeThreads[t];
+                ExecuteThread(Thread, MS);
+
+                if (Thread.Finished)
+                {
+                    //Set T to the index of the thread FOLLOWING the thread that was removed,
+                    //or to the index of the last thread in the list.
+                    int ThreadIndex = activeThreads.IndexOf(Thread) + 1;
+                    t = (ThreadIndex < activeThreads.Count) ? ThreadIndex : activeThreads.Count - 1;
+                    activeThreads.Remove(Thread);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Starts a thread on this ScriptMachine instance.
+        /// </summary>
+        /// <param name="StartAddress">The address to start executing from.</param>
+        /// <param name="Mission">Is this a mission thread?</param>
+        public void StartThread(uint StartAddress, bool Mission)
+        {
+            SCMThread Thread = new SCMThread();
+
+            for (int i = 0; i < SCM_THREAD_LOCAL_SIZE * SCM_VARIABLE_SIZE; ++i)
+                Thread.Locals[i] = (char)0;
+
+            Thread.Name = "THREAD";
+            Thread.ConditionResult = false;
+            Thread.ConditionCount = 0;
+            Thread.ConditionAND = false;
+            Thread.ProgramCounter = StartAddress;
+            Thread.BaseAddress = StartAddress; /* Indicates where negative jumps should jump from */
+            Thread.WakeCounter = 0;
+            Thread.IsMission = Mission;
+            Thread.Finished = false;
+            Thread.StackDepth = 0;
+            Thread.DeathOrArrestCheck = true;
+            Thread.WastedOrBusted = false;
+            Thread.AllowWaitSkip = false;
+            activeThreads.Add(Thread);
         }
 
         private void ExecuteThread(SCMThread Thread, int MSPassed)
