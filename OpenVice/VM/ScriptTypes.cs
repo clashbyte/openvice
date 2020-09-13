@@ -1,4 +1,15 @@
-﻿using System;
+﻿//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// This program is free software: you can redistribute it and/or modify it under the terms of the 
+/// GNU General Public License as published by the Free Software Foundation, either version 3 of the License, 
+/// or (at your option) any later version.
+/// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+/// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+/// for more details.
+/// You should have received a copy of the GNU General Public License along with this program. If not, see
+/// http://www.gnu.org/licenses/.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
@@ -6,8 +17,8 @@ using OpenVice.Entities;
 
 namespace OpenVice.VM
 {
-    public delegate void ScriptFunction(ScriptArguments Args);
-    public delegate bool ScriptFunctionBoolean(ScriptArguments Args);
+    public delegate void ScriptFunction(ref ScriptArguments Args);
+    public delegate bool ScriptFunctionBoolean(ref ScriptArguments Args);
 
     public class ScriptObjectType<T>
     {
@@ -77,6 +88,7 @@ namespace OpenVice.VM
     public struct ScriptFunctionMeta
     {
         public ScriptFunction Function;
+        public ScriptFunctionBoolean BooleanFunction;
         public int Arguments;
         /** API name for this function */
         public string Signature;
