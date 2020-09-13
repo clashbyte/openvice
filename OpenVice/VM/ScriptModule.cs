@@ -1,4 +1,15 @@
-﻿using System;
+﻿//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// This program is free software: you can redistribute it and/or modify it under the terms of the 
+/// GNU General Public License as published by the Free Software Foundation, either version 3 of the License, 
+/// or (at your option) any later version.
+/// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+/// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+/// for more details.
+/// You should have received a copy of the GNU General Public License along with this program. If not, see
+/// http://www.gnu.org/licenses/.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 using System.Collections.Generic;
 
 namespace OpenVice.VM
@@ -47,8 +58,13 @@ namespace OpenVice.VM
         /// <param name="Function"></param>
         public void Bind<Tfunc>(ushort ID, int Argc, Tfunc Function)
         {
+            Type T = typeof(Tfunc);
+
             ScriptFunctionMeta MetaFunction = new ScriptFunctionMeta();
-            MetaFunction.Function = (ScriptFunction)Convert.ChangeType(Function, typeof(ScriptFunction));
+            if(T == typeof(ScriptFunction))
+                MetaFunction.Function = (ScriptFunction)Convert.ChangeType(Function, typeof(ScriptFunction));
+            else
+                MetaFunction.BooleanFunction = (ScriptFunctionBoolean)Convert.ChangeType(Function, typeof(ScriptFunctionBoolean));
             MetaFunction.Arguments = Argc;
 
             functions.Add(ID, MetaFunction);

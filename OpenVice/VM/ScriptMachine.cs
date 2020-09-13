@@ -1,4 +1,15 @@
-﻿using System;
+﻿//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/// This program is free software: you can redistribute it and/or modify it under the terms of the 
+/// GNU General Public License as published by the Free Software Foundation, either version 3 of the License, 
+/// or (at your option) any later version.
+/// This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the 
+/// implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License 
+/// for more details.
+/// You should have received a copy of the GNU General Public License along with this program. If not, see
+/// http://www.gnu.org/licenses/.
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -204,11 +215,11 @@ namespace OpenVice.VM
         /// <summary>
         /// Executes all the active threads in this ScriptMachine instance.
         /// </summary>
-        /// <param name="dt"></param>
-        public void Execute(float dt)
+        /// <param name="DeltaTime">The delta time.</param>
+        public void Execute(float DeltaTime)
         {
             //RW_PROFILE_SCOPEC(__func__, MP_ORANGERED);
-            int MS = (int)(dt * 1000f);
+            int MS = (int)(DeltaTime * 1000f);
             for (var t = 0; t < activeThreads.Count; ++t)
             {
                 var Thread = activeThreads[t];
@@ -360,15 +371,15 @@ namespace OpenVice.VM
                                     //TODO: This was originally GlobalData.data() + v...
                                     Param.GlobalPtr = (IntPtr)globalData.ToArray().Length + v * SCM_VARIABLE_SIZE;
                                     Parameters[Parameters.Count - 1] = Param;
-                                }
 
-                                if (v >= file.GlobalsSize)
-                                {
-                                    Debug.WriteLine("ERROR: ScriptMachine.cs: Global out of bounds! " +
-                                        v.ToString() + " " +
-                                        file.GlobalsSize.ToString());
+                                    if (v >= file.GlobalsSize)
+                                    {
+                                        Debug.WriteLine("ERROR: ScriptMachine.cs: Global out of bounds! " +
+                                            v.ToString() + " " +
+                                            file.GlobalsSize.ToString());
+                                    }
+                                    PC += sizeof(byte) * 2;
                                 }
-                                PC += sizeof(byte) * 2;
                             }
                             break;
                         case SCMType.TLocal:
@@ -381,13 +392,13 @@ namespace OpenVice.VM
                                     //Not sure if this is correct, was originally Locals.data() + v...
                                     Param.GlobalPtr = (IntPtr)Thread.Locals.ToArray().Length + v * SCM_VARIABLE_SIZE;
                                     Parameters[Parameters.Count - 1] = Param;
-                                }
 
-                                if (v >= SCM_THREAD_LOCAL_SIZE)
-                                {
-                                    Debug.WriteLine("Scriptmachine.CS: Local out of bounds!");
+                                    if (v >= SCM_THREAD_LOCAL_SIZE)
+                                    {
+                                        Debug.WriteLine("Scriptmachine.CS: Local out of bounds!");
+                                    }
+                                    PC += sizeof(byte) * 2;
                                 }
-                                PC += sizeof(byte) * 2;
                             }
                             break;
                         case SCMType.TInt32:
@@ -396,8 +407,9 @@ namespace OpenVice.VM
                                 SCMOpcodeParameter Param = Parameters.LastOrDefault();
                                 Param.Integer = file.Read<int>(PC);
                                 Parameters[Parameters.Count - 1] = Param;
+
+                                PC += sizeof(byte) * 4;
                             }
-                            PC += sizeof(byte) * 4;
                             break;
                         case SCMType.TString:
                             lock (Parameters) //Thread safety
@@ -408,9 +420,9 @@ namespace OpenVice.VM
                                 Array.Copy(file.Data.ToArray(), (int)PC, Str, 0, 8);
                                 Param.Str = new string(Str);
                                 Parameters[Parameters.Count - 1] = Param;
-                            }
 
-                            PC += sizeof(byte) * 8;
+                                PC += sizeof(byte) * 8;
+                            }
                             break;
                         case SCMType.TFloat16:
                             lock (Parameters) //Thread safety
@@ -418,8 +430,9 @@ namespace OpenVice.VM
                                 SCMOpcodeParameter Param = Parameters.LastOrDefault();
                                 Param.Real = file.Read<short>(PC) / 16f;
                                 Parameters[Parameters.Count - 1] = Param;
+                            
+                                PC += sizeof(byte) * 2;
                             }
-                            PC += sizeof(byte) * 2;
                             break;
                         default:
                             throw new UnknownType<Exception>((char)type, PC, Thread.Name);
@@ -448,7 +461,10 @@ namespace OpenVice.VM
                     // After debugging has been completed, update the program counter
                     Thread.ProgramCounter = PC;
 
-                    Code.Function?.Invoke(Sca);
+                    if (Code.Function != null)
+                        Code.Function?.Invoke(ref Sca);
+                    else
+                        Thread.ConditionResult = Code.BooleanFunction.Invoke(ref Sca);
 
                     if (IsNegatedConditional)
                     {
