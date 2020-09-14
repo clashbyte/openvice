@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
+using Sentry;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
@@ -29,15 +24,18 @@ namespace OpenVice.Forms {
 		/// <param name="fullscreen">Use fullscreen window<para/>Использовать полноэкранное окно</param>
 		public GameForm(int width, int height, bool fullscreen) :
 		base(width, height, new GraphicsMode(new ColorFormat(24), 24), "OpenVice", GameWindowFlags.Default, DisplayDevice.Default, 2, 4, GraphicsContextFlags.Default) {
-			Load += InitEventHook;
-			UpdateFrame += UpdateEventHook;
-			RenderFrame += RenderEventHook;
-			Resize += ResizeEventHook;
-			Icon = OpenVice.Properties.Resources.AppIcon;
+            using (SentrySdk.Init("https://c538a4e287ff404d890420b77fe03437@o447173.ingest.sentry.io/5426812"))
+            {
+                Load += InitEventHook;
+                UpdateFrame += UpdateEventHook;
+                RenderFrame += RenderEventHook;
+                Resize += ResizeEventHook;
+                Icon = OpenVice.Properties.Resources.AppIcon;
 
-			Viewport.Size = new Vector2(ClientSize.Width, ClientSize.Height);
-			Camera.Zoom = 1f;
-			Camera.FarClip = 2000f;
+                Viewport.Size = new Vector2(ClientSize.Width, ClientSize.Height);
+                Camera.Zoom = 1f;
+                Camera.FarClip = 2000f;
+            }
 		}
 
 		/// <summary>
