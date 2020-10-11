@@ -47,8 +47,22 @@ namespace OpenVice.VM
             MainModule.Bind<ScriptFunction>(0x0015, 2, FloatRightDivisionAssignment);
             MainModule.Bind<ScriptFunction>(0x0016, 2, IntLeftDivisionAssignment);
             MainModule.Bind<ScriptFunction>(0x0017, 2, FloatLeftDivisionAssignment);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0018, 2, MoreThanRight);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0019, 2, MoreThanLeft);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0018, 2, IntMoreThanRight);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0019, 2, IntMoreThanLeft);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001a, 2, IntMoreThanRight2);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001b, 2, IntMoreThanLeft2);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001c, 2, IntMoreThanRight3);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001d, 2, IntMoreThanLeft3);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001e, 2, IntMoreThanRight4);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001f, 2, IntMoreThanLeft4);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0020, 2, FloatMoreThanRight);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0021, 2, FloatMoreThanLeft);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0022, 2, FloatMoreThanRight2);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0023, 2, FloatMoreThanLeft2);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0024, 2, FloatMoreThanRight3);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0025, 2, FloatMoreThanLeft3);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0026, 2, FloatMoreThanRight4);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0027, 2, FloatMoreThanLeft4);
         }
 
         /// <summary>
@@ -368,13 +382,177 @@ namespace OpenVice.VM
             Thread.Finished = true;
         }
 
-        public static bool MoreThanRight(ref ScriptArguments Args)
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanRight(ref ScriptArguments Args)
         {
             var Params = Args.GetParameters();
             return Params[1].Integer > Params[0].Integer;
         }
 
-        public static bool MoreThanLeft(ref ScriptArguments Args)
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanLeft(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanRight2(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanLeft2(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanRight3(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanLeft3(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanRight4(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IntMoreThanLeft4(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanRight(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanLeft(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanRight2(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanLeft2(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanRight3(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanLeft3(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanRight4(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool FloatMoreThanLeft4(ref ScriptArguments Args)
         {
             var Params = Args.GetParameters();
             return Params[0].Integer > Params[1].Integer;
