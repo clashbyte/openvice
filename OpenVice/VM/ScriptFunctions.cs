@@ -64,6 +64,14 @@ namespace OpenVice.VM
             MainModule.Bind<ScriptFunctionBoolean>(0x0025, 2, IsFloatLVarGreaterThanFloatLVar);
             MainModule.Bind<ScriptFunctionBoolean>(0x0026, 2, IsFloatVarGreaterThanFloatLVar);
             MainModule.Bind<ScriptFunctionBoolean>(0x0027, 2, IsFloatLVarGreaterThanFloatVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0028, 2, IsIntLVarGreaterOrEqualToNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0029, 2, IsIntVarGreaterThanIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002a, 2, IsIntLVarGreaterThanIntLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002b, 2, IsIntLVarGreaterThanIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002c, 2, IsFloatLVarGreaterThanNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002d, 2, IsNumberGreaterOrEqualToIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002e, 2, IsNumberGreaterOrEqualToIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002f, 2, IsIntLVarGreaterOrEqualToIntVar);
         }
 
         /// <summary>
@@ -113,12 +121,16 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SetVarInt(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
+            /*var Params = Args.GetParameters();
             SCMOpcodeParameter SecondParam = Params[1];
 
             //I'm assuming the assignment happens right to left here, as that is default for C++.
             SecondParam.Integer = Args[0].Integer;
-            Params[1] = SecondParam;
+            Params[1] = SecondParam;*/
+
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger = Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -127,12 +139,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SetVarFloat(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Real = Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal = Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -141,11 +150,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SetLVarInt(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Integer = Args[1].Integer;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -154,11 +161,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SetLVarFloat(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real = Args[1].Real;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Real += Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -167,11 +172,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void AddValToIntVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Integer += Args[0].Integer;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger += Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -180,12 +183,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void AddValToFloatVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Real += Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal += Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -194,11 +194,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void AddValToIntLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Integer += Args[1].Integer;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -207,11 +205,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void AddValToFloatLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real += Args[1].Real;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal += Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -220,11 +216,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SubValFromIntVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Integer -= Args[0].Integer;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger -= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -233,11 +227,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SubValFromFloatVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Real -= Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal -= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -246,11 +238,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SubValFromIntLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Integer -= Args[1].Integer;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -259,11 +249,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void SubValFromFloatLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real -= Args[1].Real;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Real += Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -272,11 +260,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void MultIntVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Integer *= Args[0].Integer;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger *= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -285,11 +271,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void MultFloatVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Real *= Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal *= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -298,11 +282,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void MultIntLVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Integer *= Args[1].Integer;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -311,11 +293,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void MultFloatLVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real *= Args[0].Real;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Real /= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -324,12 +304,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void DivIntVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Integer /= Args[0].Integer;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger /= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -338,12 +315,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void DivFloatVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Real /= Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal /= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -352,11 +326,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void DivIntLVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Integer /= Args[0].Integer;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Integer += Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -365,11 +337,9 @@ namespace OpenVice.VM
         /// <param name="Args">A ScriptArguments instance.</param>
         public static void DivFloatLVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real /= Args[0].Real;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Real /= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
@@ -379,8 +349,12 @@ namespace OpenVice.VM
         /// <returns></returns>
         public static bool IsIntVarGreaterThanNumber(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (FirstParam.GlobalInteger > Args[1].Integer)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -390,8 +364,12 @@ namespace OpenVice.VM
         /// <returns></returns>
         public static bool IsIntLVarGreaterThanNumber(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (FirstParam.Integer > Args[1].Integer)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -401,8 +379,12 @@ namespace OpenVice.VM
         /// <returns>True if greater than, false otherwise.</returns>
         public static bool IsNumberGreaterThanIntVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Integer > FirstParam.GlobalInteger)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -413,8 +395,12 @@ namespace OpenVice.VM
         /// <returns>True if greater than, false otherwise.</returns>
         public static bool IsNumberGreaterThanIntLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Integer > FirstParam.Integer)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -424,8 +410,12 @@ namespace OpenVice.VM
         /// <returns>True if greater than, false otherwise.</returns>
         public static bool IsNumberGreaterThanFloatVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Real > FirstParam.GlobalReal)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -435,8 +425,12 @@ namespace OpenVice.VM
         /// <returns>True if greater than, false otherwise.</returns>
         public static bool IsNumberGreaterThanFloatLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Real > FirstParam.Real)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -447,8 +441,12 @@ namespace OpenVice.VM
         /// <returns></returns>
         public static bool IsFloatVarGreaterThanFloatVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Integer > FirstParam.GlobalInteger)
+                return true;
+
+            return false;
         }
 
         /// <summary>

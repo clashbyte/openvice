@@ -124,7 +124,7 @@ namespace OpenVice.VM
         [FieldOffset(5)]
         public int GlobalInteger;
         [FieldOffset(6)]
-        float GlobalReal;
+        public float GlobalReal;
 
         public int IntegerValue()
         {
