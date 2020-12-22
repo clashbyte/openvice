@@ -16,7 +16,8 @@ namespace OpenVice.VM
 {
     /// <summary>
     /// Implements the functions accessible by the scripts.
-    /// Opcodes: https://gtamods.com/wiki/List_of_opcodes
+    /// All the functions are named after definitions found on gtamods.com
+    /// Opcodes: https://gtamods.com/wiki/SCM_language_III/VC_definitions
     /// </summary>
     public class ScriptFunctions
     {
@@ -25,44 +26,52 @@ namespace OpenVice.VM
         static ScriptFunctions()
         {
             MainModule = new ScriptModule("main"); //main.scm
-            MainModule.Bind<ScriptFunction>(0000, 0, Nope);
-            MainModule.Bind<ScriptFunction>(0001, 1, Wait);
-            MainModule.Bind<ScriptFunction>(0002, 1, Goto);
-            MainModule.Bind<ScriptFunction>(0004, 2, IntRightAssignment);
-            MainModule.Bind<ScriptFunction>(0005, 2, FloatRightAssignment);
-            MainModule.Bind<ScriptFunction>(0006, 2, IntLeftAssignment);
-            MainModule.Bind<ScriptFunction>(0007, 2, FloatLeftAssignment);
-            MainModule.Bind<ScriptFunction>(0008, 2, IntRightAdditionAssignment);
-            MainModule.Bind<ScriptFunction>(0x000a, 2, FloatRightAdditionAssignment);
-            MainModule.Bind<ScriptFunction>(0x000b, 2, IntLeftAdditionAssignment);
-            MainModule.Bind<ScriptFunction>(0x000c, 2, FloatLeftAdditionAssignment);
-            MainModule.Bind<ScriptFunction>(0x000d, 2, IntRightSubtractionAssignment);
-            MainModule.Bind<ScriptFunction>(0x000e, 2, FloatRightSubtractionAssignment);
-            MainModule.Bind<ScriptFunction>(0x000f, 2, FloatLeftSubtractionAssignment);
-            MainModule.Bind<ScriptFunction>(0x0010, 2, IntRightMultiplicationAssignment);
-            MainModule.Bind<ScriptFunction>(0x0011, 2, FloatRightMultiplicationAssignment);
-            MainModule.Bind<ScriptFunction>(0x0012, 2, IntLeftMultiplicationAssignment);
-            MainModule.Bind<ScriptFunction>(0x0013, 2, FloatLeftMultiplicationAssignment);
-            MainModule.Bind<ScriptFunction>(0x0014, 2, IntRightDivisionAssignment);
-            MainModule.Bind<ScriptFunction>(0x0015, 2, FloatRightDivisionAssignment);
-            MainModule.Bind<ScriptFunction>(0x0016, 2, IntLeftDivisionAssignment);
-            MainModule.Bind<ScriptFunction>(0x0017, 2, FloatLeftDivisionAssignment);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0018, 2, IntMoreThanRight);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0019, 2, IntMoreThanLeft);
-            MainModule.Bind<ScriptFunctionBoolean>(0x001a, 2, IntMoreThanRight2);
-            MainModule.Bind<ScriptFunctionBoolean>(0x001b, 2, IntMoreThanLeft2);
-            MainModule.Bind<ScriptFunctionBoolean>(0x001c, 2, IntMoreThanRight3);
-            MainModule.Bind<ScriptFunctionBoolean>(0x001d, 2, IntMoreThanLeft3);
-            MainModule.Bind<ScriptFunctionBoolean>(0x001e, 2, IntMoreThanRight4);
-            MainModule.Bind<ScriptFunctionBoolean>(0x001f, 2, IntMoreThanLeft4);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0020, 2, FloatMoreThanRight);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0021, 2, FloatMoreThanLeft);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0022, 2, FloatMoreThanRight2);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0023, 2, FloatMoreThanLeft2);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0024, 2, FloatMoreThanRight3);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0025, 2, FloatMoreThanLeft3);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0026, 2, FloatMoreThanRight4);
-            MainModule.Bind<ScriptFunctionBoolean>(0x0027, 2, FloatMoreThanLeft4);
+            MainModule.Bind<ScriptFunction>(0x0000, 0, Nope);
+            MainModule.Bind<ScriptFunction>(0x0001, 1, Wait);
+            MainModule.Bind<ScriptFunction>(0x0002, 1, Goto);
+            MainModule.Bind<ScriptFunction>(0x0004, 2, SetVarInt);
+            MainModule.Bind<ScriptFunction>(0x0005, 2, SetVarFloat);
+            MainModule.Bind<ScriptFunction>(0x0006, 2, SetLVarInt);
+            MainModule.Bind<ScriptFunction>(0x0007, 2, SetLVarFloat);
+            MainModule.Bind<ScriptFunction>(0x0008, 2, AddValToIntVar);
+            MainModule.Bind<ScriptFunction>(0x000a, 2, AddValToIntLVar);
+            MainModule.Bind<ScriptFunction>(0x000b, 2, AddValToFloatLVar);
+            MainModule.Bind<ScriptFunction>(0x000c, 2, SubValFromIntVar);
+            MainModule.Bind<ScriptFunction>(0x000d, 2, SubValFromFloatVar);
+            MainModule.Bind<ScriptFunction>(0x000e, 2, SubValFromIntLVar);
+            MainModule.Bind<ScriptFunction>(0x000f, 2, SubValFromFloatLVar);
+            MainModule.Bind<ScriptFunction>(0x0010, 2, MultIntVarByVal);
+            MainModule.Bind<ScriptFunction>(0x0011, 2, MultFloatLVarByVal);
+            MainModule.Bind<ScriptFunction>(0x0012, 2, MultIntLVarByVal);
+            MainModule.Bind<ScriptFunction>(0x0013, 2, MultFloatLVarByVal);
+            MainModule.Bind<ScriptFunction>(0x0014, 2, DivIntVarByVal);
+            MainModule.Bind<ScriptFunction>(0x0015, 2, DivFloatVarByVal);
+            MainModule.Bind<ScriptFunction>(0x0016, 2, DivIntLVarByVal);
+            MainModule.Bind<ScriptFunction>(0x0017, 2, DivFloatLVarByVal);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0018, 2, IsIntVarGreaterThanNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0019, 2, IsIntLVarGreaterThanNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001a, 2, IsNumberGreaterThanIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001b, 2, IsNumberGreaterThanIntLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001c, 2, IsIntVarGreaterThanIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001d, 2, IsIntLVarGreaterThanIntLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001e, 2, IsIntVarGreaterThanIntLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x001f, 2, IsIntLVarGreaterThanIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0020, 2, IsFloatVarGreaterThanNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0021, 2, IsFloatLVarGreaterThanNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0022, 2, IsNumberGreaterThanFloatVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0023, 2, IsNumberGreaterThanFloatLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0024, 2, IsFloatVarGreaterThanFloatVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0025, 2, IsFloatLVarGreaterThanFloatLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0026, 2, IsFloatVarGreaterThanFloatLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0027, 2, IsFloatLVarGreaterThanFloatVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0028, 2, IsIntLVarGreaterOrEqualToNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x0029, 2, IsIntVarGreaterThanIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002a, 2, IsIntLVarGreaterThanIntLVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002b, 2, IsIntLVarGreaterThanIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002c, 2, IsFloatLVarGreaterThanNumber);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002d, 2, IsNumberGreaterOrEqualToIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002e, 2, IsNumberGreaterOrEqualToIntVar);
+            MainModule.Bind<ScriptFunctionBoolean>(0x002f, 2, IsIntLVarGreaterOrEqualToIntVar);
         }
 
         /// <summary>
@@ -107,268 +116,511 @@ namespace OpenVice.VM
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Sets the value of a global variable to a specified integer.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntRightAssignment(ref ScriptArguments Args)
+        public static void SetVarInt(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
+            /*var Params = Args.GetParameters();
             SCMOpcodeParameter SecondParam = Params[1];
 
             //I'm assuming the assignment happens right to left here, as that is default for C++.
             SecondParam.Integer = Args[0].Integer;
-            Params[1] = SecondParam;
+            Params[1] = SecondParam;*/
+
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger = Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Sets the value of a global variable to a specified float.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatRightAssignment(ref ScriptArguments Args)
+        public static void SetVarFloat(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Real = Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal = Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Sets the value of a local variable to a specified integer.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntLeftAssignment(ref ScriptArguments Args)
+        public static void SetLVarInt(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Integer = Args[1].Integer;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Sets the value of a local variable to a specified float.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatLeftAssignment(ref ScriptArguments Args)
+        public static void SetLVarFloat(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real = Args[1].Real;
-            Params[0] = FirstParam;
-        }
-
-        /// <summary>
-        /// Assigns the value of arg1 to arg2.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntRightAdditionAssignment(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Integer += Args[0].Integer;
-            Params[1] = SecondParam;
-        }
-
-        /// <summary>
-        /// Assigns the value of arg1 to arg2.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatRightAdditionAssignment(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Real += Args[0].Real;
-            Params[1] = SecondParam;
-        }
-
-        /// <summary>
-        /// Assigns the value of arg1 to arg2.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntLeftAdditionAssignment(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Integer += Args[1].Integer;
-            Params[0] = FirstParam;
-        }
-
-        /// <summary>
-        /// Assigns the value of arg1 to arg2.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatLeftAdditionAssignment(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Real += Args[1].Real;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Increases the value stored in the global variable by the specified integer value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntRightSubtractionAssignment(ref ScriptArguments Args)
+        public static void AddValToIntVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Integer -= Args[0].Integer;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger += Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Increases the value stored in the global variable by the specified float value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatRightSubtractionAssignment(ref ScriptArguments Args)
+        public static void AddValToFloatVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Real -= Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal += Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Increases the value stored in the local variable by the specified integer value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntLeftSubtractionAssignment(ref ScriptArguments Args)
+        public static void AddValToIntLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Integer += Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
+        }
 
+        /// <summary>
+        /// Increases the value stored in the local variable by the specified float value.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        public static void AddValToFloatLVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal += Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
+        }
+
+        /// <summary>
+        /// Subtracts the specified integer from the value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        public static void SubValFromIntVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger -= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
+        }
+
+        /// <summary>
+        /// Subtracts the specified float from the value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        public static void SubValFromFloatVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal -= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
+        }
+
+        /// <summary>
+        /// Subtracts the specified int from the value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        public static void SubValFromIntLVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Integer -= Args[1].Integer;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Subtracts the specified float from the value stored in the local variable.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatLeftSubtractionAssignment(ref ScriptArguments Args)
+        public static void SubValFromFloatLVar(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real -= Args[1].Real;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Real += Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Multiplies the value stored in the global variable by the specified integer value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntRightMultiplicationAssignment(ref ScriptArguments Args)
+        public static void MultIntVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Integer *= Args[0].Integer;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger *= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Multiplies the value stored in the global variable by the specified float value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatRightMultiplicationAssignment(ref ScriptArguments Args)
+        public static void MultFloatVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            SecondParam.Real *= Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal *= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Multiplies the value stored in the local variable by the specified integer value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntLeftMultiplicationAssignment(ref ScriptArguments Args)
+        public static void MultIntLVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
+            SCMOpcodeParameter FirstParam = Args[0];
             FirstParam.Integer *= Args[1].Integer;
-            Params[0] = FirstParam;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Multiplies the value stored in the local variable by the specified float value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatLeftMultiplicationAssignment(ref ScriptArguments Args)
+        public static void MultFloatLVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Real *= Args[0].Real;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Real /= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Divides the value stored in the global variable by the specified integer value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntRightDivisionAssignment(ref ScriptArguments Args)
+        public static void DivIntVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Integer /= Args[0].Integer;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalInteger /= Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Divides the value stored in the global variable by the specified float value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatRightDivisionAssignment(ref ScriptArguments Args)
+        public static void DivFloatVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter SecondParam = Params[1];
-
-            //I'm assuming the assignment happens right to left here, as that is default for C++.
-            SecondParam.Real /= Args[0].Real;
-            Params[1] = SecondParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.GlobalReal /= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Divides the value stored in the local variable by the specified integer value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void IntLeftDivisionAssignment(ref ScriptArguments Args)
+        public static void DivIntLVarByVal(ref ScriptArguments Args)
         {
-            var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
-
-            FirstParam.Integer /= Args[0].Integer;
-            Params[0] = FirstParam;
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Integer += Args[1].Integer;
+            Args[0] = FirstParam; //This should work, in theory.
         }
 
         /// <summary>
-        /// Assigns the value of arg1 to arg2.
+        /// Divides the value stored in the local variable by the specified float value.
         /// </summary>
         /// <param name="Args">A ScriptArguments instance.</param>
-        public static void FloatLeftDivisionAssignment(ref ScriptArguments Args)
+        public static void DivFloatLVarByVal(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+            FirstParam.Real /= Args[1].Real;
+            Args[0] = FirstParam; //This should work, in theory.
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the global variable is greater than the integer number.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntVarGreaterThanNumber(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (FirstParam.GlobalInteger > Args[1].Integer)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the local variable is greater than the integer number.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntLVarGreaterThanNumber(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (FirstParam.Integer > Args[1].Integer)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the integer number is greater than the integer value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns>True if greater than, false otherwise.</returns>
+        public static bool IsNumberGreaterThanIntVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Integer > FirstParam.GlobalInteger)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the integer number is greater than
+        /// the integer value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns>True if greater than, false otherwise.</returns>
+        public static bool IsNumberGreaterThanIntLVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Integer > FirstParam.Integer)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        //  Checks if the floating-point number is greater than the value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns>True if greater than, false otherwise.</returns>
+        public static bool IsNumberGreaterThanFloatVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Real > FirstParam.GlobalReal)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        //  Checks if the floating-point number is greater than the value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns>True if greater than, false otherwise.</returns>
+        public static bool IsNumberGreaterThanFloatLVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Real > FirstParam.Real)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the floating-point value stored in the global variable is 
+        /// greater than the floating-point value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsFloatVarGreaterThanFloatVar(ref ScriptArguments Args)
+        {
+            SCMOpcodeParameter FirstParam = Args[0];
+
+            if (Args[1].Integer > FirstParam.GlobalInteger)
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the local variable is greater or equal to the integer number.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntLVarGreaterOrEqualToNumber(ref ScriptArguments Args)
         {
             var Params = Args.GetParameters();
-            SCMOpcodeParameter FirstParam = Params[0];
+            return Params[1].Integer > Params[0].Integer;
+        }
 
-            FirstParam.Real /= Args[0].Real;
-            Params[0] = FirstParam;
+        /// <summary>
+        /// Checks if the floating-point value stored in the local variable is 
+        /// greater than the floating-point value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsFloatLVarGreaterThanFloatLVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the floating-point value stored in the global variable is 
+        /// greater than the floating-point value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsFloatVarGreaterThanFloatLVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the floating-point value stored in the local variable is 
+        /// greater than the floating-point value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsFloatLVarGreaterThanFloatVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the global variable is greater or equal to the integer number.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntVarGreaterOrEqualToNumber(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer >= Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the global variable is 
+        /// greater than the integer value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntVarGreaterThanIntVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the local variable is 
+        /// greater than the integer value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntLVarGreaterThanIntLVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the global variable is 
+        /// greater than the integer value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntVarGreaterThanIntLVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the local variable is 
+        /// greater than the integer value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntLVarGreaterThanIntVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the value stored in the global variable is greater than the floating-point number.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsFloatVarGreaterThanNumber(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the value stored in the local variable is greater than the floating-point number.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsFloatLVarGreaterThanNumber(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer number is greater or equal to the integer value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsNumberGreaterOrEqualToIntVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer >= Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer number is greater or equal to the integer value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsNumberGreaterOrEqualToIntLVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer >= Params[1].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the global variable is 
+        /// greater or equal to the integer value stored in the global variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntVarGreaterOrEqualToIntVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[1].Integer > Params[0].Integer;
+        }
+
+        /// <summary>
+        /// Checks if the integer value stored in the local variable is 
+        /// greater or equal to the integer value stored in the local variable.
+        /// </summary>
+        /// <param name="Args">A ScriptArguments instance.</param>
+        /// <returns></returns>
+        public static bool IsIntLVarGreaterOrEqualToIntVar(ref ScriptArguments Args)
+        {
+            var Params = Args.GetParameters();
+            return Params[0].Integer > Params[1].Integer;
         }
 
         /// <summary>
@@ -380,182 +632,6 @@ namespace OpenVice.VM
             SCMThread Thread = Args.GetThread();
             Thread.WakeCounter = -1;
             Thread.Finished = true;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanRight(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanLeft(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanRight2(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanLeft2(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanRight3(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanLeft3(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanRight4(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool IntMoreThanLeft4(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanRight(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanLeft(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanRight2(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from left to right.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanLeft2(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanRight3(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanLeft3(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanRight4(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[1].Integer > Params[0].Integer;
-        }
-
-        /// <summary>
-        /// Returns true if arg 1 is more than arg 2. Evaluates from right to left.
-        /// </summary>
-        /// <param name="Args">A ScriptArguments instance.</param>
-        /// <returns></returns>
-        public static bool FloatMoreThanLeft4(ref ScriptArguments Args)
-        {
-            var Params = Args.GetParameters();
-            return Params[0].Integer > Params[1].Integer;
         }
 
         /// <summary>
