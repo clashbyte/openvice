@@ -30,7 +30,6 @@ namespace OpenVice.Forms {
                 UpdateFrame += UpdateEventHook;
                 RenderFrame += RenderEventHook;
                 Resize += ResizeEventHook;
-                Icon = OpenVice.Properties.Resources.AppIcon;
 
                 Viewport.Size = new Vector2(ClientSize.Width, ClientSize.Height);
                 Camera.Zoom = 1f;

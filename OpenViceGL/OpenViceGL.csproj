@@ -1,83 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A4C02D05-C93D-4EE2-9F74-5023C504A149}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>OpenVice</RootNamespace>
     <AssemblyName>OpenViceGL</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.1.1.1589.5942\lib\NET40\OpenTK.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="Microsoft.CSharp" />
+    <ProjectReference Include="..\OpenViceData\OpenViceData.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Dev\DXTDecoder.cs" />
-    <Compile Include="Dev\GLExtensions.cs" />
-    <Compile Include="Graphics\Renderers\DebugRenderer.cs" />
-    <Compile Include="Graphics\Renderers\SkinnedRenderer.cs" />
-    <Compile Include="Graphics\Renderers\SkyRenderer.cs" />
-    <Compile Include="Graphics\Renderers\StaticRenderer.cs" />
-    <Compile Include="Graphics\Shaders\DebugShader.cs" />
-    <Compile Include="Graphics\Shaders\ShaderBase.cs" />
-    <Compile Include="Graphics\Shaders\SkinnedShader.cs" />
-    <Compile Include="Graphics\Shaders\SkyShader.cs" />
-    <Compile Include="Graphics\Shaders\StaticShader.cs" />
-    <Compile Include="Managers\ModelManager.cs" />
-    <Compile Include="Managers\TextureManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Graphics\CameraManager.cs" />
-    <Compile Include="Graphics\CullSphere.cs" />
-    <Compile Include="Graphics\Frustum.cs" />
-    <Compile Include="Graphics\Model.cs" />
-    <Compile Include="Graphics\Render.cs" />
-    <Compile Include="Graphics\Renderers\RendererBase.cs" />
-    <Compile Include="Graphics\TextureDictionary.cs" />
-    <Compile Include="Graphics\Transform.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OpenViceData\OpenViceData.csproj">
-      <Project>{c2919507-761a-4bd1-a63a-24fb9d7fd6e2}</Project>
-      <Name>OpenViceData</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
